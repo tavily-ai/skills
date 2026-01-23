@@ -1,5 +1,5 @@
 ---
-name: crawl-url
+name: crawl
 description: "Crawl any website and save pages as local markdown files. Use when you need to download documentation, knowledge bases, or web content for offline access or analysis. No code required - just provide a URL."
 ---
 
@@ -21,6 +21,28 @@ Add to `~/.claude/settings.json`:
 ```
 
 ## Quick Start
+
+### Using the Script
+
+```bash
+./scripts/crawl.sh "url" [max_depth] [limit] [output_dir]
+```
+
+| Param | Default | Description |
+|-------|---------|-------------|
+| `url` | Required | Root URL to crawl |
+| `max_depth` | `1` | Levels deep (1-5) |
+| `limit` | `20` | Max pages to crawl |
+| `output_dir` | - | Save each page as markdown file |
+
+**Examples:**
+```bash
+./scripts/crawl.sh "https://docs.example.com"
+./scripts/crawl.sh "https://docs.example.com" 2 50
+./scripts/crawl.sh "https://docs.example.com" 2 50 ./docs
+```
+
+When `output_dir` is provided, each crawled page is saved as a separate markdown file.
 
 ### Basic Crawl
 
@@ -109,9 +131,17 @@ POST https://api.tavily.com/crawl
 
 **Start with `max_depth=1`** and increase only if needed.
 
+## Crawl for Context vs Data Collection
+
+**For agentic use (feeding results into context):** Always use `instructions` + `chunks_per_source`. This returns only relevant chunks instead of full pages, preventing context window explosion.
+
+**For data collection (saving to files):** Omit `chunks_per_source` to get full page content.
+
 ## Examples
 
-### Documentation Crawl
+### For Context: Agentic Research (Recommended)
+
+Use when feeding crawl results into an LLM context:
 
 ```bash
 curl --request POST \
@@ -121,12 +151,32 @@ curl --request POST \
   --data '{
     "url": "https://docs.example.com",
     "max_depth": 2,
-    "extract_depth": "advanced",
-    "select_paths": ["/docs/.*", "/guides/.*"]
+    "instructions": "Find API documentation and authentication guides",
+    "chunks_per_source": 3
   }'
 ```
 
-### Blog Archive Crawl
+Returns only the most relevant chunks (max 500 chars each) per page - fits in context without overwhelming it.
+
+### For Context: Targeted Technical Docs
+
+```bash
+curl --request POST \
+  --url https://api.tavily.com/crawl \
+  --header "Authorization: Bearer $TAVILY_API_KEY" \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "url": "https://example.com",
+    "max_depth": 2,
+    "instructions": "Find all documentation about authentication and security",
+    "chunks_per_source": 3,
+    "select_paths": ["/docs/.*", "/api/.*"]
+  }'
+```
+
+### For Data Collection: Full Page Archive
+
+Use when saving content to files for later processing:
 
 ```bash
 curl --request POST \
@@ -142,20 +192,7 @@ curl --request POST \
   }'
 ```
 
-### Semantic-Focused Crawl
-
-```bash
-curl --request POST \
-  --url https://api.tavily.com/crawl \
-  --header "Authorization: Bearer $TAVILY_API_KEY" \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "url": "https://example.com",
-    "max_depth": 2,
-    "instructions": "Find all documentation about authentication and security",
-    "chunks_per_source": 3
-  }'
-```
+Returns full page content - use the script with `output_dir` to save as markdown files.
 
 ## Map API (URL Discovery)
 
@@ -187,7 +224,8 @@ Returns URLs only (faster than crawl):
 
 ## Tips
 
-- **Use `instructions` + `chunks_per_source`** to get only relevant content
+- **Always use `chunks_per_source` for agentic workflows** - prevents context explosion when feeding results to LLMs
+- **Omit `chunks_per_source` only for data collection** - when saving full pages to files
 - **Start conservative** (`max_depth=1`, `limit=20`) and scale up
 - **Use path patterns** to focus on relevant sections
 - **Use Map first** to understand site structure before full crawl
