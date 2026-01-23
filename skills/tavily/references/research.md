@@ -7,9 +7,10 @@
 - [Model Selection](#model-selection)
 - [Key Parameters](#key-parameters)
 - [Basic Usage](#basic-usage)
-- [Streaming](#streaming)
-- [Structured Output](#structured-output)
+- [Streaming vs Polling](#streaming-vs-polling)
+- [Structured Output vs Report](#structured-output-vs-report)
 - [Response Fields](#response-fields)
+- [Summary](#summary)
 
 ---
 
@@ -144,9 +145,14 @@ sources = response["sources"]
 
 ---
 
-## Streaming
+## Streaming vs Polling
 
-Enable real-time progress monitoring with `stream=True`. Best for user interfaces where you want real-time updates.
+**Streaming** — Best for user interfaces where you want real-time updates.
+**Polling** — Best for background processes where you check status periodically.
+
+### Streaming
+
+Enable real-time progress monitoring with `stream=True`.
 
 ```python
 stream = client.research(
@@ -188,15 +194,20 @@ for chunk in stream:
 6. `Sources` event
 7. `Done` event
 
-**When to use streaming vs polling:**
-- **Streaming**: User interfaces with real-time updates
-- **Polling**: Background processes checking status periodically
+See [streaming cookbook](https://github.com/tavily-ai/tavily-cookbook/blob/main/cookbooks/research/streaming.ipynb) and [polling cookbook](https://github.com/tavily-ai/tavily-cookbook/blob/main/cookbooks/research/polling.ipynb) for complete examples.
 
 ---
 
+## Structured Output vs. Report
+
+| Format | Best For |
+|--------|----------|
+| **Report** (default) | Reading, sharing, or displaying verbatim (chat interfaces, briefs, newsletters) |
+| **Structured Output** | Data enrichment, pipelines, or powering UIs with specific fields |
+
 ## Structured Output
 
-Use `output_schema` to receive research in a predefined JSON structure. Best for data enrichment, pipelines, or powering UIs.
+Use `output_schema` to receive research in a predefined JSON structure.
 
 ```python
 schema = {
@@ -292,12 +303,13 @@ for chunk in stream:
 
 ---
 
-## Best Practices Summary
+## Summary
 
-1. **Use streaming for UX** — Display progress during long research tasks
-2. **Be specific in topics** — Focused queries yield more relevant results
-3. **Use structured output** — Define schemas for consistent, parseable responses
-4. **Choose the right model** — `mini` for focused queries, `pro` for comprehensive analysis
-5. **Include prior context** — Share what you already know to avoid repetition
+1. **Be specific in prompts** — Include known details: target market, competitors, geography, constraints
+2. **Share prior context** — Include what you already know to avoid repetition
+3. **Choose the right model** — `mini` for focused queries, `pro` for comprehensive multi-domain analysis
+4. **Use streaming for UX** — Display real-time progress during long research tasks
+5. **Use structured output for pipelines** — Define schemas for consistent, parseable responses
+6. **Use reports for reading** — Default format is best for chat interfaces and sharing
 
-For more examples, see the [Tavily Cookbook](https://github.com/tavily-ai/tavily-cookbook/tree/main/research).
+For more examples, see the [Tavily Cookbook](https://github.com/tavily-ai/tavily-cookbook/tree/main/research) and [live demo](https://chat-research.tavily.com/).

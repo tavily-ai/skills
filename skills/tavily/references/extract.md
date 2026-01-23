@@ -8,6 +8,7 @@
 - [Extract Depth](#extract-depth)
 - [Advanced Filtering Strategies](#advanced-filtering-strategies)
 - [Response Fields](#response-fields)
+- [Summary](#summary)
 
 ---
 
@@ -77,6 +78,7 @@ for item in extracted["results"]:
 | `format` | enum | `"markdown"` | Output: `"markdown"` or `"text"` |
 | `include_images` | boolean | false | Include image URLs |
 | `include_favicon` | boolean | false | Include favicon URL |
+| `include_usage` | boolean | false | Include credit consumption data in response |
 | `timeout` | float | varies | Max wait time (1.0-60.0 seconds) |
 
 ---
@@ -97,10 +99,15 @@ extracted = client.extract(
 )
 ```
 
-**Key benefits:**
+**When to use query:**
+- To extract only relevant portions of long documents
+- When you need focused content instead of full page extraction
+- For targeted information retrieval from specific URLs
+
+**Key benefits of chunks_per_source:**
 - Returns only relevant snippets (max 500 chars each) instead of full page
 - Chunks appear in `raw_content` as: `<chunk 1> [...] <chunk 2> [...] <chunk 3>`
-- Prevents context from exploding in agentic use cases
+- Prevents context window from exploding in agentic use cases
 
 **Note:** `chunks_per_source` only works when `query` is provided.
 
@@ -145,6 +152,15 @@ Beyond query-based filtering, consider these approaches before extraction:
 | LLM-based | Let an LLM assess relevance before extraction |
 | Clustering | Group similar documents, extract from clusters |
 
+### Optimal Workflow
+
+1. **Search** to discover relevant URLs
+2. **Filter** by relevance score, domain, or content snippet
+3. **Re-rank** if needed using specialized models
+4. **Extract** from top-ranked sources with query and chunks_per_source
+5. **Validate** extracted content quality
+6. **Process** for your AI application
+
 ### Example: Complete Pipeline
 
 ```python
@@ -164,7 +180,7 @@ async def content_pipeline(topic):
         *(client.search(q, search_depth="advanced", max_results=10) for q in queries)
     )
 
-    # 2. Filter and aggregate
+    # 2. Filter and aggregate by score
     urls = []
     for response in responses:
         urls.extend([
@@ -175,15 +191,15 @@ async def content_pipeline(topic):
     # 3. Deduplicate
     urls = list(set(urls))[:20]
 
-    # 4. Extract with targeting
-    extracted = await client.extract(
-        urls=urls,
-        query=topic,
-        chunks_per_source=3,
-        extract_depth="advanced"
+    # 4. Extract with error handling
+    extracted = await asyncio.gather(
+        *(client.extract(urls=[url], query=topic, extract_depth="advanced")
+          for url in urls),
+        return_exceptions=True
     )
 
-    return extracted
+    # 5. Filter successful extractions
+    return [e for e in extracted if not isinstance(e, Exception)]
 
 asyncio.run(content_pipeline("machine learning in healthcare"))
 ```
@@ -199,6 +215,8 @@ asyncio.run(content_pipeline("machine learning in healthcare"))
 | `results` | Array of successfully extracted content |
 | `failed_results` | Array of URLs that failed extraction |
 | `response_time` | Time in seconds |
+| `request_id` | Unique identifier for support reference |
+| `usage` | Credit usage info (if `include_usage=True`) |
 
 **Each result object:**
 
@@ -215,5 +233,17 @@ asyncio.run(content_pipeline("machine learning in healthcare"))
 |-------|-------------|
 | `url` | The URL that failed |
 | `error` | Error message |
+
+---
+
+## Summary
+
+1. **Use query and chunks_per_source** for targeted, focused extraction
+2. **Choose Extract API** when you need control over which URLs to extract from
+3. **Filter URLs** before extraction using scores, re-ranking, or domain trust
+4. **Choose appropriate extract_depth** based on content complexity
+5. **Process URLs concurrently** with async operations for better performance
+6. **Implement error handling** to manage failed extractions gracefully
+7. **Validate extracted content** before downstream processing
 
 For more details, see the [full API reference](https://docs.tavily.com/documentation/api-reference/endpoint/extract)
