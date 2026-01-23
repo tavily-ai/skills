@@ -24,6 +24,25 @@ Add to `~/.claude/settings.json`:
 
 > **Tip**: Research can take 30-120 seconds. Press **Ctrl+B** to run in the background.
 
+### Using the Script
+
+```bash
+./scripts/research.sh "query" [model] [output_file]
+```
+
+| Param | Default | Description |
+|-------|---------|-------------|
+| `query` | Required | Research topic or question |
+| `model` | `mini` | `mini`, `pro`, or `auto` |
+| `output_file` | - | Optional file to save results |
+
+**Examples:**
+```bash
+./scripts/research.sh "quantum computing trends"
+./scripts/research.sh "AI agents comparison" pro
+./scripts/research.sh "market analysis for EVs" pro ./ev-report.md
+```
+
 ### Basic Research
 
 ```bash

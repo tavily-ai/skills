@@ -22,6 +22,24 @@ Add to `~/.claude/settings.json`:
 
 ## Quick Start
 
+### Using the Script
+
+```bash
+./scripts/extract.sh "url1" ["url2" ...] [--query "focus query"]
+```
+
+| Param | Description |
+|-------|-------------|
+| `urls` | One or more URLs to extract (max 20) |
+| `--query` | Optional query to focus extraction |
+
+**Examples:**
+```bash
+./scripts/extract.sh "https://example.com/article"
+./scripts/extract.sh "https://example.com/page1" "https://example.com/page2"
+./scripts/extract.sh "https://example.com/docs" --query "authentication API"
+```
+
 ### Basic Extraction
 
 ```bash

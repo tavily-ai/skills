@@ -22,6 +22,25 @@ Add to `~/.claude/settings.json`:
 
 ## Quick Start
 
+### Using the Script
+
+```bash
+./scripts/search.sh "query" [max_results] [search_depth]
+```
+
+| Param | Default | Description |
+|-------|---------|-------------|
+| `query` | Required | Search query (under 400 chars) |
+| `max_results` | `5` | Number of results (1-20) |
+| `search_depth` | `basic` | `ultra-fast`, `fast`, `basic`, `advanced` |
+
+**Examples:**
+```bash
+./scripts/search.sh "python async patterns"
+./scripts/search.sh "React hooks tutorial" 10
+./scripts/search.sh "machine learning best practices" 15 advanced
+```
+
 ### Basic Search
 
 ```bash
