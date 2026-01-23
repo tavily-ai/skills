@@ -24,9 +24,17 @@ Restart Claude Code after adding your API key.
 
 ## Installation
 
+**Python:**
 ```bash
 pip install tavily-python
 ```
+
+**JavaScript:**
+```bash
+npm install @tavily/core
+```
+
+See **[references/sdk.md](references/sdk.md)** for complete SDK reference.
 
 ## Client Initialization
 
@@ -149,8 +157,9 @@ Key parameters: `input`, `model` ("mini"/"pro"/"auto"), `stream`, `output_schema
 
 For complete parameters, response fields, patterns, and examples:
 
+- **[references/sdk.md](references/sdk.md)** - Python & JavaScript SDK reference, async patterns, Hybrid RAG
 - **[references/search.md](references/search.md)** - Query optimization, search depth selection, domain filtering, async patterns, post-filtering
 - **[references/extract.md](references/extract.md)** - One-step vs two-step extraction, query/chunks for targeting, advanced mode
 - **[references/crawl.md](references/crawl.md)** - Crawl vs Map, instructions for semantic focus, use cases, Map-then-Extract pattern
 - **[references/research.md](references/research.md)** - Prompting best practices, model selection, streaming, structured output schemas
-- **[references/integrations.md](references/integrations.md)** - LangChain, LlamaIndex, and framework integrations
+- **[references/integrations.md](references/integrations.md)** - LangChain, LlamaIndex, CrewAI, Vercel AI SDK, and framework integrations
