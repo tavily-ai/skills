@@ -32,22 +32,22 @@ responses = await asyncio.gather(*(client.search(q) for q in queries))
 
 Controls the latency vs. relevance tradeoff:
 
-| Depth | Latency | Relevance | Content Type | Cost |
-|-------|---------|-----------|--------------|------|
-| `ultra-fast` | Lowest | Lower | NLP summary | 1 credit |
-| `fast` | Low | Good | Chunks | 1 credit |
-| `basic` | Medium | High | NLP summary | 1 credit |
-| `advanced` | Higher | Highest | Chunks | 2 credits |
+| Depth | Latency | Relevance | Content Type |
+|-------|---------|-----------|--------------|
+| `ultra-fast` | Lowest | Lower | Content (NLP summary) |
+| `fast` | Low | Good | Chunks |
+| `basic` | Medium | High | Content (NLP summary) |
+| `advanced` | Higher | Highest | Chunks |
 
 **Content types:**
-- **Content/NLP summary**: General page summary
-- **Chunks**: Short snippets (max 500 chars) reranked by query relevance
+- **Content**: NLP-based summary of the page, providing general context
+- **Chunks**: Short snippets (max 500 chars) reranked by relevance to your query
 
-**When to use each:**
+**When to use each:** 
 - `ultra-fast`: Latency-critical (real-time chat, autocomplete)
 - `fast`: Need chunks but latency matters
-- `basic`: General-purpose, balanced
-- `advanced`: Specific information queries, precision matters
+- `basic`: General-purpose, balanced relevance and latency
+- `advanced`: Specific information queries, precision matters - default (Still fast and suitable for almost all use cases) 
 
 ## Key Parameters
 
@@ -56,7 +56,7 @@ Controls the latency vs. relevance tradeoff:
 | `query` | string | Required | Search query (keep under 400 chars) |
 | `search_depth` | enum | `"basic"` | `"ultra-fast"`, `"fast"`, `"basic"`, `"advanced"` |
 | `topic` | enum | `"general"` | `"general"`, `"news"` (adds `published_date`), `"finance"` |
-| `chunks_per_source` | integer | 3 | Chunks per source (1-3, advanced/fast depth only) |
+| `chunks_per_source` | integer | 3 | Chunks per source (advanced/fast depth only) |
 | `max_results` | integer | 5 | Maximum results (0-20) |
 | `time_range` | enum | null | `"day"`, `"week"`, `"month"`, `"year"` |
 | `start_date` | string | null | Results after date (YYYY-MM-DD) |
@@ -216,7 +216,15 @@ asyncio.run(fetch_and_gather())
 | `content` | Extracted text snippet(s) |
 | `score` | Semantic relevance score (0-1) |
 | `raw_content` | Full page content (if `include_raw_content` enabled) |
+| `published_date` | Publication date (if `topic="news"`) |
 | `favicon` | Favicon URL (if `include_favicon=True`) |
+
+**Top-level response also includes:**
+
+| Field | Description |
+|-------|-------------|
+| `request_id` | Unique identifier for support reference |
+| `response_time` | Response time in seconds |
 
 **Each image object (if `include_images=True`):**
 

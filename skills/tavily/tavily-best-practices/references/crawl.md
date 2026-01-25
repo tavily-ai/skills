@@ -11,6 +11,7 @@
 - [Performance Optimization](#performance-optimization)
 - [Common Pitfalls](#common-pitfalls)
 - [Response Fields](#response-fields)
+- [Summary](#summary)
 
 ---
 
@@ -52,8 +53,10 @@
 | `exclude_paths` | array | null | Regex patterns to exclude |
 | `select_domains` | array | null | Regex for domains to include |
 | `exclude_domains` | array | null | Regex for domains to exclude |
-| `allow_external` | boolean | true | Include external domain links |
-| `include_images` | boolean | false | Include images |
+| `allow_external` | boolean | true (crawl) / false (map) | Include external domain links |
+| `include_images` | boolean | false | Include images (crawl only) |
+| `include_favicon` | boolean | false | Include favicon URL (crawl only) |
+| `include_usage` | boolean | false | Include credit usage info |
 | `timeout` | float | 150 | Max wait (10-150 seconds) |
 
 ---
@@ -198,11 +201,28 @@ response = client.crawl(
 )
 ```
 
+### 7. Known URL Patterns
+Sitemap-based crawling, section-specific extraction.
+
+```python
+response = client.crawl(
+    url="https://example.com",
+    max_depth=1,
+    select_paths=["/docs/.*", "/api/.*", "/guides/.*"],
+    exclude_paths=["/private/.*", "/admin/.*"]
+)
+```
+
 ---
 
 ## Map then Extract Pattern
 
-Discover structure first, then extract strategically:
+Consider using Map before Crawl/Extract to plan your strategy:
+
+1. **Use Map** to get site structure
+2. **Analyze** paths and patterns
+3. **Configure** Crawl or Extract with discovered paths
+4. **Execute** focused extraction
 
 ```python
 # Step 1: Map to discover structure
@@ -213,8 +233,8 @@ map_result = client.map(
 )
 
 # Step 2: Filter discovered URLs
-api_docs = [url for url in map_result["urls"] if "/api/" in url]
-guides = [url for url in map_result["urls"] if "/guides/" in url]
+api_docs = [url for url in map_result["results"] if "/api/" in url]
+guides = [url for url in map_result["results"] if "/guides/" in url]
 print(f"Found {len(api_docs)} API docs, {len(guides)} guides")
 
 # Step 3: Extract from filtered URLs
@@ -237,7 +257,7 @@ response = client.extract(
 
 ## Performance Optimization
 
-### Depth Impact
+### Depth vs Performance
 
 Each depth level increases crawl time exponentially:
 
@@ -247,7 +267,18 @@ Each depth level increases crawl time exponentially:
 | 2 | 50-500 | Minutes |
 | 3 | 500-5000 | Many minutes |
 
-**Best practice:** Start with `max_depth=1`, increase only if needed.
+**Best practices:**
+- Start with `max_depth=1` and increase only if needed
+- Use `max_breadth` to control horizontal expansion
+- Set appropriate `limit` to prevent excessive crawling
+- Process results incrementally rather than waiting for full crawl
+
+### Rate Limiting
+
+- Respect site's robots.txt
+- Monitor API usage and limits
+- Use appropriate error handling for rate limits
+- Consider delays between large crawl operations
 
 ### Conservative vs Comprehensive
 
@@ -275,11 +306,11 @@ response = client.crawl(
 
 | Problem | Impact | Solution |
 |---------|--------|----------|
-| `max_depth=4+` | Exponential time, unnecessary pages | Start with 1-2, increase if needed |
-| No `instructions` | Wasted resources, irrelevant content | Use instructions for semantic focus |
-| No `limit` | Runaway crawls, unexpected costs | Always set reasonable limit |
-| Ignoring `failed_results` | Incomplete data | Monitor and adjust parameters |
-| Full content without chunks | Context explosion | Use `instructions` + `chunks_per_source` |
+| Excessive depth (`max_depth=4+`) | Exponential time, unnecessary pages | Start with 1-2, increase if needed |
+| Unfocused crawling | Wasted resources, irrelevant content, context explosion | Use `instructions` to focus semantically |
+| Missing limits | Runaway crawls, unexpected costs | Always set reasonable `limit` value |
+| Ignoring `failed_results` | Incomplete data, missed content | Monitor and adjust parameters |
+| Full content without chunks | Context window explosion | Use `instructions` + `chunks_per_source` |
 
 ---
 
@@ -289,18 +320,38 @@ response = client.crawl(
 
 | Field | Description |
 |-------|-------------|
+| `base_url` | The URL you started the crawl from |
 | `results` | List of crawled pages |
 | `results[].url` | Page URL |
 | `results[].raw_content` | Extracted content (or chunks if instructions provided) |
-| `failed_results` | Pages that failed extraction |
+| `results[].images` | Image URLs extracted from the page |
+| `results[].favicon` | Favicon URL (if `include_favicon=True`) |
 | `response_time` | Time in seconds |
+| `request_id` | Unique identifier for support reference |
 
 ### Map Response
 
 | Field | Description |
 |-------|-------------|
-| `urls` | List of discovered URLs |
-| `base_url` | Starting URL |
+| `base_url` | The URL you started the mapping from |
+| `results` | List of discovered URLs |
 | `response_time` | Time in seconds |
+| `request_id` | Unique identifier for support reference |
+
+---
+
+## Summary
+
+1. **Use instructions and chunks_per_source** for focused, relevant results in agentic use cases
+2. **Start conservative** (`max_depth=1`, `max_breadth=20`) and scale up as needed
+3. **Use path patterns** to focus crawling on relevant content
+4. **Choose appropriate extract_depth** based on content complexity
+5. **Always set a limit** to prevent runaway crawls and unexpected costs
+6. **Monitor failed_results** and adjust patterns accordingly
+7. **Use Map first** to understand site structure before committing to full crawl
+8. **Implement error handling** for rate limits and failures
+9. **Respect robots.txt** and site policies
+
+> Crawling is powerful but resource-intensive. Focus your crawls, start small, monitor results, and scale gradually based on actual needs.
 
 For more details, see the [full API reference](https://docs.tavily.com/documentation/api-reference/endpoint/crawl)

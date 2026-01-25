@@ -6,6 +6,9 @@
 - [LlamaIndex](#llamaindex)
 - [OpenAI Function Calling](#openai-function-calling)
 - [Anthropic Tool Use](#anthropic-tool-use)
+- [Vercel AI SDK](#vercel-ai-sdk)
+- [CrewAI](#crewai)
+- [No-Code Platforms](#no-code-platforms)
 
 ---
 
@@ -253,13 +256,123 @@ if response.stop_reason == "tool_use":
 
 ---
 
-## Other Integrations
+## Vercel AI SDK
 
-Tavily also integrates with:
-- **CrewAI** - Multi-agent frameworks
-- **Pydantic AI** - Type-safe AI applications
-- **Vercel AI SDK** - Next.js/React applications
-- **N8N, Make, Zapier** - No-code automation
-- **Flowise, Dify** - Visual LLM builders
+The `@tavily/ai-sdk` package provides pre-built tools for Vercel AI SDK v5.
 
-See the [full integrations documentation](https://docs.tavily.com/documentation/integrations) for details.
+### Installation
+
+```bash
+npm install ai @ai-sdk/openai @tavily/ai-sdk
+```
+
+### Usage
+
+```typescript
+import { tavilySearch, tavilyCrawl } from "@tavily/ai-sdk";
+import { generateText } from "ai";
+import { openai } from "@ai-sdk/openai";
+
+// Search
+const result = await generateText({
+  model: openai("gpt-4"),
+  prompt: "What are the latest AI developments?",
+  tools: {
+    tavilySearch: tavilySearch({
+      maxResults: 5,
+      searchDepth: "advanced",
+    }),
+  },
+});
+
+// Crawl
+const crawlResult = await generateText({
+  model: openai("gpt-4"),
+  prompt: "Crawl tavily.com and summarize their features",
+  tools: {
+    tavilyCrawl: tavilyCrawl({
+      maxDepth: 2,
+      limit: 50,
+    }),
+  },
+});
+```
+
+**Available tools:** `tavilySearch`, `tavilyExtract`, `tavilyCrawl`, `tavilyMap`
+
+---
+
+## CrewAI
+
+CrewAI provides built-in Tavily tools for multi-agent workflows.
+
+### Installation
+
+```bash
+pip install 'crewai[tools]'
+```
+
+### Usage
+
+```python
+import os
+from crewai import Agent, Task, Crew
+from crewai_tools import TavilySearchTool, TavilyExtractTool
+
+os.environ["TAVILY_API_KEY"] = "your-api-key"
+
+# Search tool
+search_tool = TavilySearchTool()
+
+# Create agent with Tavily
+researcher = Agent(
+    role="Research Analyst",
+    goal="Find and analyze information on given topics",
+    tools=[search_tool],
+    backstory="Expert at finding relevant information online"
+)
+
+task = Task(
+    description="Research the latest developments in quantum computing",
+    expected_output="A comprehensive summary with sources",
+    agent=researcher
+)
+
+crew = Crew(agents=[researcher], tasks=[task])
+result = crew.kickoff()
+```
+
+---
+
+## No-Code Platforms
+
+Tavily integrates with popular no-code automation platforms:
+
+| Platform | Features | Best For |
+|----------|----------|----------|
+| **Zapier** | Search, Extract | CRM enrichment, automated research |
+| **Make** | Search, Extract | Complex workflows, multi-step automations |
+| **n8n** | Search, Extract, AI Agent tool | Self-hosted, AI agent workflows |
+| **Dify** | Search, Extract | No-code AI apps, chatflows |
+| **FlowiseAI** | Search | Visual LLM builders, RAG systems |
+| **Langflow** | Search, Extract | Visual agent building |
+
+### Common Use Cases
+
+- **Lead enrichment**: Trigger on new CRM record → Search company info → Update record
+- **Market monitoring**: Schedule → Search industry news → Send digest
+- **Content research**: Trigger → Multi-search → LLM summarize → Store results
+
+---
+
+## Additional Integrations
+
+| Framework | Package/Tool | Notes |
+|-----------|--------------|-------|
+| Pydantic AI | `pydantic-ai-slim[tavily]` | Type-safe AI agents |
+| Google ADK | MCP Server | Gemini-powered agents |
+| Composio | Composio platform | Multi-tool orchestration |
+| Agno | `agno` + `tavily-python` | Lightweight agent framework |
+| Tines | Native integration | Security automation |
+
+See the [full integrations documentation](https://docs.tavily.com/documentation/integrations) for complete guides.

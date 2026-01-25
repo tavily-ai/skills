@@ -3,13 +3,13 @@ name: tavily-best-practices
 description: "Build production-ready Tavily integrations with best practices baked in. Reference documentation for developers using coding assistants (Claude Code, Cursor, etc.) to implement web search, content extraction, crawling, and research in agentic workflows, RAG systems, or autonomous agents."
 ---
 
-# Tavily Python SDK
+# Tavily
 
 Tavily is a search API designed for LLMs, enabling AI applications to access real-time web data.
 
 ## Prerequisites
 
-**Tavily API Key Required** - Get your key at https://app.tavily.com (1,000 free credits/month, no credit card required)
+**Tavily API Key Required** - Get your key at https://app.tavily.com (1,000 free API credits/month, no credit card required)
 
 Add to `~/.claude/settings.json`:
 ```json
@@ -24,9 +24,17 @@ Restart Claude Code after adding your API key.
 
 ## Installation
 
+**Python:**
 ```bash
 pip install tavily-python
 ```
+
+**JavaScript:**
+```bash
+npm install @tavily/core
+```
+
+See **[references/sdk.md](references/sdk.md)** for complete SDK reference.
 
 ## Client Initialization
 
@@ -38,6 +46,9 @@ client = TavilyClient()
 
 # Option 2: Explicit API key
 client = TavilyClient(api_key="tvly-YOUR_API_KEY")
+
+# Option 3: With project tracking (for usage organization)
+client = TavilyClient(api_key="tvly-YOUR_API_KEY", project_id="your-project-id")
 
 # Async client for parallel queries
 from tavily import AsyncTavilyClient
@@ -116,7 +127,7 @@ response = client.map(
     max_depth=2,
     instructions="Find all API and guide pages"
 )
-api_docs = [url for url in response["urls"] if "/api/" in url]
+api_docs = [url for url in response["results"] if "/api/" in url]
 ```
 
 ### research() - AI-Powered Research
@@ -146,8 +157,9 @@ Key parameters: `input`, `model` ("mini"/"pro"/"auto"), `stream`, `output_schema
 
 For complete parameters, response fields, patterns, and examples:
 
+- **[references/sdk.md](references/sdk.md)** - Python & JavaScript SDK reference, async patterns, Hybrid RAG
 - **[references/search.md](references/search.md)** - Query optimization, search depth selection, domain filtering, async patterns, post-filtering
 - **[references/extract.md](references/extract.md)** - One-step vs two-step extraction, query/chunks for targeting, advanced mode
 - **[references/crawl.md](references/crawl.md)** - Crawl vs Map, instructions for semantic focus, use cases, Map-then-Extract pattern
 - **[references/research.md](references/research.md)** - Prompting best practices, model selection, streaming, structured output schemas
-- **[references/integrations.md](references/integrations.md)** - LangChain, LlamaIndex, and framework integrations
+- **[references/integrations.md](references/integrations.md)** - LangChain, LlamaIndex, CrewAI, Vercel AI SDK, and framework integrations
