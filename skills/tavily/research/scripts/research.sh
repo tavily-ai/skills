@@ -28,6 +28,7 @@ RESPONSE=$(curl -sN --request POST \
     --url https://api.tavily.com/research \
     --header "Authorization: Bearer $TAVILY_API_KEY" \
     --header 'Content-Type: application/json' \
+    --header 'x-client-source: claude-code-skill' \
     --data "{
         \"input\": \"$QUERY\",
         \"model\": \"$MODEL\",
