@@ -51,31 +51,31 @@ Add to `~/.claude/settings.json`:
 ### Basic Research
 
 ```bash
-curl -N --request POST \
+curl --request POST \
   --url https://api.tavily.com/research \
   --header "Authorization: Bearer $TAVILY_API_KEY" \
   --header 'Content-Type: application/json' \
   --data '{
     "input": "Latest developments in quantum computing",
     "model": "mini",
-    "stream": true,
+    "stream": false,
     "citation_format": "numbered"
   }'
 ```
 
-The `-N` flag disables buffering so you see streaming progress. The call waits until research completes.
+> **Note**: Streaming is disabled for token management. The call waits until research completes and returns clean JSON.
 
 ### With Custom Schema
 
 ```bash
-curl -N --request POST \
+curl --request POST \
   --url https://api.tavily.com/research \
   --header "Authorization: Bearer $TAVILY_API_KEY" \
   --header 'Content-Type: application/json' \
   --data '{
     "input": "Electric vehicle market analysis",
     "model": "pro",
-    "stream": true,
+    "stream": false,
     "citation_format": "numbered",
     "output_schema": {
       "properties": {
@@ -122,31 +122,21 @@ POST https://api.tavily.com/research
 |-------|------|---------|-------------|
 | `input` | string | Required | Research topic or question |
 | `model` | string | `"mini"` | Model: `mini`, `pro`, `auto` |
-| `stream` | boolean | `true` | Stream results (single call, waits for completion) |
+| `stream` | boolean | `false` | Streaming disabled for token management |
 | `output_schema` | object | null | JSON schema for structured output |
 | `citation_format` | string | `"numbered"` | Citation format: `numbered`, `mla`, `apa`, `chicago` |
 
-### Response Format (SSE)
+### Response Format (JSON)
 
+With `stream: false`, the response is clean JSON:
+
+```json
+{
+  "content": "# Research Results\n\n...",
+  "sources": [{"url": "https://...", "title": "Source Title"}],
+  "response_time": 45.2
+}
 ```
-event: chat.completion.chunk
-data: {"choices":[{"delta":{"tool_calls":{"tool_call":[{"name":"Planning","arguments":"Initializing..."}]}}}]}
-
-event: chat.completion.chunk
-data: {"choices":[{"delta":{"content":"# Research Results\n\n..."}}]}
-
-event: research.sources
-data: {"sources":[{"url":"https://...","title":"Source Title"}]}
-
-event: done
-data: {"response_time":45.2}
-```
-
-Key events:
-- **Planning/WebSearch chunks**: Show research progress
-- **content chunks**: Research content (markdown or JSON if schema provided)
-- **sources**: Array of citations used
-- **done**: Final event with response time
 
 ## Model Selection
 
@@ -184,14 +174,14 @@ Schemas make output structured and predictable. Every property **MUST** include 
 ### Market Research
 
 ```bash
-curl -N --request POST \
+curl --request POST \
   --url https://api.tavily.com/research \
   --header "Authorization: Bearer $TAVILY_API_KEY" \
   --header 'Content-Type: application/json' \
   --data '{
     "input": "Fintech startup landscape 2025",
     "model": "pro",
-    "stream": true,
+    "stream": false,
     "citation_format": "numbered",
     "output_schema": {
       "properties": {
@@ -219,14 +209,14 @@ curl -N --request POST \
 ### Technical Comparison
 
 ```bash
-curl -N --request POST \
+curl --request POST \
   --url https://api.tavily.com/research \
   --header "Authorization: Bearer $TAVILY_API_KEY" \
   --header 'Content-Type: application/json' \
   --data '{
     "input": "LangGraph vs CrewAI for multi-agent systems",
     "model": "pro",
-    "stream": true,
+    "stream": false,
     "citation_format": "mla"
   }'
 ```
@@ -234,13 +224,13 @@ curl -N --request POST \
 ### Quick Overview
 
 ```bash
-curl -N --request POST \
+curl --request POST \
   --url https://api.tavily.com/research \
   --header "Authorization: Bearer $TAVILY_API_KEY" \
   --header 'Content-Type: application/json' \
   --data '{
     "input": "What is retrieval augmented generation?",
     "model": "mini",
-    "stream": true
+    "stream": false
   }'
 ```

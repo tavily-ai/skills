@@ -19,7 +19,7 @@ if [ -z "$JSON_INPUT" ]; then
     echo "    - mini: Targeted, efficient research for narrow questions"
     echo "    - pro: Comprehensive, multi-agent research for complex topics"
     echo "    - auto: Automatically selects based on query complexity"
-    echo "  stream: true/false (default: true for this script)"
+    echo "  (streaming disabled for token management)"
     echo "  citation_format: \"numbered\" (default), \"mla\", \"apa\", \"chicago\""
     echo "  output_schema: JSON Schema object for structured output"
     echo ""
@@ -48,9 +48,9 @@ if ! echo "$JSON_INPUT" | jq -e '.input' >/dev/null 2>&1; then
     exit 1
 fi
 
-# Add streaming and citation format defaults if not specified
+# Add citation format default if not specified, disable streaming for token management
 JSON_INPUT=$(echo "$JSON_INPUT" | jq '
-    if .stream == null then . + {stream: true} else . end |
+    . + {stream: false} |
     if .citation_format == null then . + {citation_format: "numbered"} else . end
 ')
 
