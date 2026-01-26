@@ -25,19 +25,22 @@ Add to `~/.claude/settings.json`:
 ### Using the Script
 
 ```bash
-./scripts/extract.sh "url1" ["url2" ...] [--query "focus query"]
+./scripts/extract.sh '<json>'
 ```
-
-| Param | Description |
-|-------|-------------|
-| `urls` | One or more URLs to extract (max 20) |
-| `--query` | Optional query to focus extraction |
 
 **Examples:**
 ```bash
-./scripts/extract.sh "https://example.com/article"
-./scripts/extract.sh "https://example.com/page1" "https://example.com/page2"
-./scripts/extract.sh "https://example.com/docs" --query "authentication API"
+# Single URL
+./scripts/extract.sh '{"urls": ["https://example.com/article"]}'
+
+# Multiple URLs
+./scripts/extract.sh '{"urls": ["https://example.com/page1", "https://example.com/page2"]}'
+
+# With query focus and chunks
+./scripts/extract.sh '{"urls": ["https://example.com/docs"], "query": "authentication API", "chunks_per_source": 3}'
+
+# Advanced extraction for JS pages
+./scripts/extract.sh '{"urls": ["https://app.example.com"], "extract_depth": "advanced", "timeout": 60}'
 ```
 
 ### Basic Extraction

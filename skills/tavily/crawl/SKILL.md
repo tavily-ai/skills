@@ -25,21 +25,25 @@ Add to `~/.claude/settings.json`:
 ### Using the Script
 
 ```bash
-./scripts/crawl.sh "url" [max_depth] [limit] [output_dir]
+./scripts/crawl.sh '<json>' [output_dir]
 ```
-
-| Param | Default | Description |
-|-------|---------|-------------|
-| `url` | Required | Root URL to crawl |
-| `max_depth` | `1` | Levels deep (1-5) |
-| `limit` | `20` | Max pages to crawl |
-| `output_dir` | - | Save each page as markdown file |
 
 **Examples:**
 ```bash
-./scripts/crawl.sh "https://docs.example.com"
-./scripts/crawl.sh "https://docs.example.com" 2 50
-./scripts/crawl.sh "https://docs.example.com" 2 50 ./docs
+# Basic crawl
+./scripts/crawl.sh '{"url": "https://docs.example.com"}'
+
+# Deeper crawl with limits
+./scripts/crawl.sh '{"url": "https://docs.example.com", "max_depth": 2, "limit": 50}'
+
+# Save to files
+./scripts/crawl.sh '{"url": "https://docs.example.com", "max_depth": 2}' ./docs
+
+# Focused crawl with path filters
+./scripts/crawl.sh '{"url": "https://example.com", "max_depth": 2, "select_paths": ["/docs/.*", "/api/.*"], "exclude_paths": ["/blog/.*"]}'
+
+# With semantic instructions (for agentic use)
+./scripts/crawl.sh '{"url": "https://docs.example.com", "instructions": "Find API documentation", "chunks_per_source": 3}'
 ```
 
 When `output_dir` is provided, each crawled page is saved as a separate markdown file.

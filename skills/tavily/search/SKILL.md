@@ -25,20 +25,22 @@ Add to `~/.claude/settings.json`:
 ### Using the Script
 
 ```bash
-./scripts/search.sh "query" [max_results] [search_depth]
+./scripts/search.sh '<json>'
 ```
-
-| Param | Default | Description |
-|-------|---------|-------------|
-| `query` | Required | Search query (under 400 chars) |
-| `max_results` | `5` | Number of results (1-20) |
-| `search_depth` | `basic` | `ultra-fast`, `fast`, `basic`, `advanced` |
 
 **Examples:**
 ```bash
-./scripts/search.sh "python async patterns"
-./scripts/search.sh "React hooks tutorial" 10
-./scripts/search.sh "machine learning best practices" 15 advanced
+# Basic search
+./scripts/search.sh '{"query": "python async patterns"}'
+
+# With options
+./scripts/search.sh '{"query": "React hooks tutorial", "max_results": 10}'
+
+# Advanced search with filters
+./scripts/search.sh '{"query": "AI news", "topic": "news", "time_range": "week", "max_results": 10}'
+
+# Domain-filtered search
+./scripts/search.sh '{"query": "machine learning", "include_domains": ["arxiv.org", "github.com"], "search_depth": "advanced"}'
 ```
 
 ### Basic Search
