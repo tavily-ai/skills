@@ -29,6 +29,7 @@ RESPONSE=$(curl -s --request POST \
     --url https://api.tavily.com/crawl \
     --header "Authorization: Bearer $TAVILY_API_KEY" \
     --header 'Content-Type: application/json' \
+    --header 'x-client-source: claude-code-skill' \
     --data "{
         \"url\": \"$URL\",
         \"max_depth\": $MAX_DEPTH,

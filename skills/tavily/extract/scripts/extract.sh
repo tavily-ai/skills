@@ -53,4 +53,5 @@ curl -s --request POST \
     --url https://api.tavily.com/extract \
     --header "Authorization: Bearer $TAVILY_API_KEY" \
     --header 'Content-Type: application/json' \
+    --header 'x-client-source: claude-code-skill' \
     --data "$REQUEST_BODY" | jq '.'

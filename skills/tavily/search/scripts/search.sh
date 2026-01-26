@@ -25,6 +25,7 @@ curl -s --request POST \
     --url https://api.tavily.com/search \
     --header "Authorization: Bearer $TAVILY_API_KEY" \
     --header 'Content-Type: application/json' \
+    --header 'x-client-source: claude-code-skill' \
     --data "{
         \"query\": \"$QUERY\",
         \"max_results\": $MAX_RESULTS,
