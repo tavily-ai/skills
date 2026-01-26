@@ -1,31 +1,29 @@
 #!/bin/bash
 # Tavily Extract API script
-# Usage: ./extract.sh "url1" ["url2" ...] [--query "focus query"]
-# Example: ./extract.sh "https://example.com/page1" "https://example.com/page2" --query "API usage"
+# Usage: ./extract.sh '{"urls": ["url1", "url2"], ...}'
+# Example: ./extract.sh '{"urls": ["https://example.com"], "query": "API usage", "chunks_per_source": 3}'
 
 set -e
 
-URLS=()
-QUERY=""
+JSON_INPUT="$1"
 
-# Parse arguments
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        --query)
-            QUERY="$2"
-            shift 2
-            ;;
-        *)
-            URLS+=("$1")
-            shift
-            ;;
-    esac
-done
-
-if [ ${#URLS[@]} -eq 0 ]; then
-    echo "Usage: ./extract.sh \"url1\" [\"url2\" ...] [--query \"focus query\"]"
-    echo "  urls: one or more URLs to extract (max 20)"
-    echo "  --query: optional query to focus extraction"
+if [ -z "$JSON_INPUT" ]; then
+    echo "Usage: ./extract.sh '<json>'"
+    echo ""
+    echo "Required:"
+    echo "  urls: string or array - Single URL or list (max 20)"
+    echo ""
+    echo "Optional:"
+    echo "  extract_depth: \"basic\" (default), \"advanced\" (for JS/complex pages)"
+    echo "  query: string - Reranks chunks by relevance to this query"
+    echo "  chunks_per_source: 1-5 (default: 3, only with query)"
+    echo "  format: \"markdown\" (default), \"text\""
+    echo "  include_images: true/false"
+    echo "  include_favicon: true/false"
+    echo "  timeout: 1.0-60.0 seconds"
+    echo ""
+    echo "Example:"
+    echo "  ./extract.sh '{\"urls\": [\"https://docs.example.com/api\"], \"query\": \"authentication\", \"chunks_per_source\": 3}'"
     exit 1
 fi
 
@@ -34,19 +32,16 @@ if [ -z "$TAVILY_API_KEY" ]; then
     exit 1
 fi
 
-# Build URLs JSON array
-URLS_JSON=$(printf '%s\n' "${URLS[@]}" | jq -R . | jq -s .)
+# Validate JSON
+if ! echo "$JSON_INPUT" | jq empty 2>/dev/null; then
+    echo "Error: Invalid JSON input"
+    exit 1
+fi
 
-# Build request body
-if [ -n "$QUERY" ]; then
-    REQUEST_BODY=$(jq -n \
-        --argjson urls "$URLS_JSON" \
-        --arg query "$QUERY" \
-        '{urls: $urls, query: $query, chunks_per_source: 3}')
-else
-    REQUEST_BODY=$(jq -n \
-        --argjson urls "$URLS_JSON" \
-        '{urls: $urls}')
+# Check for required urls field
+if ! echo "$JSON_INPUT" | jq -e '.urls' >/dev/null 2>&1; then
+    echo "Error: 'urls' field is required"
+    exit 1
 fi
 
 curl -s --request POST \
@@ -54,4 +49,4 @@ curl -s --request POST \
     --header "Authorization: Bearer $TAVILY_API_KEY" \
     --header 'Content-Type: application/json' \
     --header 'x-client-source: claude-code-skill' \
-    --data "$REQUEST_BODY" | jq '.'
+    --data "$JSON_INPUT" | jq '.'

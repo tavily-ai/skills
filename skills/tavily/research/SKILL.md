@@ -27,20 +27,25 @@ Add to `~/.claude/settings.json`:
 ### Using the Script
 
 ```bash
-./scripts/research.sh "query" [model] [output_file]
+./scripts/research.sh '<json>' [output_file]
 ```
-
-| Param | Default | Description |
-|-------|---------|-------------|
-| `query` | Required | Research topic or question |
-| `model` | `mini` | `mini`, `pro`, or `auto` |
-| `output_file` | - | Optional file to save results |
 
 **Examples:**
 ```bash
-./scripts/research.sh "quantum computing trends"
-./scripts/research.sh "AI agents comparison" pro
-./scripts/research.sh "market analysis for EVs" pro ./ev-report.md
+# Basic research
+./scripts/research.sh '{"input": "quantum computing trends"}'
+
+# With pro model for comprehensive analysis
+./scripts/research.sh '{"input": "AI agents comparison", "model": "pro"}'
+
+# Save to file
+./scripts/research.sh '{"input": "market analysis for EVs", "model": "pro"}' ./ev-report.md
+
+# With custom citation format
+./scripts/research.sh '{"input": "climate change impacts", "model": "mini", "citation_format": "apa"}'
+
+# With structured output schema
+./scripts/research.sh '{"input": "fintech startups 2025", "model": "pro", "output_schema": {"properties": {"summary": {"type": "string"}, "companies": {"type": "array", "items": {"type": "string"}}}, "required": ["summary"]}}'
 ```
 
 ### Basic Research
