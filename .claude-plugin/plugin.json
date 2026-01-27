@@ -8,7 +8,7 @@
     "url": "https://www.tavily.com/"
   },
   "homepage": "https://docs.tavily.com",
-  "repository": "https://github.com/tavily-ai/tavily-plugins",
+  "repository": "https://github.com/tavily-ai/skills",
   "license": "MIT",
   "keywords": ["search", "web-search", "rag", "agents", "llm", "research", "crawl", "extract"],
   "skills": "./skills/"
