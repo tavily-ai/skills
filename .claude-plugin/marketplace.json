@@ -18,8 +18,8 @@
         "name": "Tavily Team",
         "email": "dean.sacoransky@tavily.com"
       },
-      "homepage": "https://github.com/tavily-ai/tavily-plugins",
-      "repository": "https://github.com/tavily-ai/tavily-plugins",
+      "homepage": "https://github.com/tavily-ai/skills",
+      "repository": "https://github.com/tavily-ai/skills",
       "license": "MIT",
       "keywords": ["search", "web-search", "rag", "agents", "llm", "research", "crawl", "extract"],
       "category": "external-integrations",
