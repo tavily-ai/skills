@@ -7,11 +7,15 @@ description: "Search the web using Tavily's LLM-optimized search API. Returns re
 
 Search the web and get relevant results optimized for LLM consumption.
 
-## Prerequisites
+## Authentication
 
-**Tavily API Key Required** - Get your key at https://tavily.com
+The script uses OAuth via the Tavily MCP server. **No manual setup required** - on first run, it will:
+1. Check for existing tokens in `~/.mcp-auth/`
+2. If none found, automatically open your browser for OAuth authentication
 
-Add to `~/.claude/settings.json`:
+### Alternative: API Key
+
+If you prefer using an API key, get one at https://tavily.com and add to `~/.claude/settings.json`:
 ```json
 {
   "env": {
@@ -37,7 +41,7 @@ Add to `~/.claude/settings.json`:
 ./scripts/search.sh '{"query": "React hooks tutorial", "max_results": 10}'
 
 # Advanced search with filters
-./scripts/search.sh '{"query": "AI news", "topic": "news", "time_range": "week", "max_results": 10}'
+./scripts/search.sh '{"query": "AI news", "time_range": "week", "max_results": 10}'
 
 # Domain-filtered search
 ./scripts/search.sh '{"query": "machine learning", "include_domains": ["arxiv.org", "github.com"], "search_depth": "advanced"}'
@@ -94,7 +98,7 @@ POST https://api.tavily.com/search
 | `query` | string | Required | Search query (keep under 400 chars) |
 | `max_results` | integer | 5 | Maximum results (0-20) |
 | `search_depth` | string | `"basic"` | `ultra-fast`, `fast`, `basic`, `advanced` |
-| `topic` | string | `"general"` | `general`, `news`, `finance` |
+| `topic` | string | `"general"` | Search topic (general only) |
 | `chunks_per_source` | integer | 3 | Chunks per source (advanced/fast only) |
 | `time_range` | string | null | `day`, `week`, `month`, `year` |
 | `include_domains` | array | [] | Domains to include (max 300) |
@@ -137,21 +141,6 @@ POST https://api.tavily.com/search
 
 ## Examples
 
-### News Search
-
-```bash
-curl --request POST \
-  --url https://api.tavily.com/search \
-  --header "Authorization: Bearer $TAVILY_API_KEY" \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "query": "AI news today",
-    "topic": "news",
-    "time_range": "day",
-    "max_results": 10
-  }'
-```
-
 ### Domain-Filtered Search
 
 ```bash
@@ -177,20 +166,6 @@ curl --request POST \
     "query": "React hooks tutorial",
     "max_results": 3,
     "include_raw_content": true
-  }'
-```
-
-### Finance Search
-
-```bash
-curl --request POST \
-  --url https://api.tavily.com/search \
-  --header "Authorization: Bearer $TAVILY_API_KEY" \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "query": "AAPL earnings Q4 2024",
-    "topic": "finance",
-    "max_results": 10
   }'
 ```
 

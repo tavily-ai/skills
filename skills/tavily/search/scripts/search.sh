@@ -1,9 +1,35 @@
 #!/bin/bash
 # Tavily Search API script
 # Usage: ./search.sh '{"query": "your search query", ...}'
-# Example: ./search.sh '{"query": "AI news", "topic": "news", "time_range": "week", "max_results": 10}'
+# Example: ./search.sh '{"query": "AI news", "time_range": "week", "max_results": 10}'
 
 set -e
+
+# Function to find token from MCP auth cache
+get_mcp_token() {
+    MCP_AUTH_DIR="$HOME/.mcp-auth"
+    if [ -d "$MCP_AUTH_DIR" ]; then
+        # Search recursively for *_tokens.json files
+        while IFS= read -r token_file; do
+            if [ -f "$token_file" ]; then
+                token=$(jq -r '.access_token // empty' "$token_file" 2>/dev/null)
+                if [ -n "$token" ] && [ "$token" != "null" ]; then
+                    echo "$token"
+                    return 0
+                fi
+            fi
+        done < <(find "$MCP_AUTH_DIR" -name "*_tokens.json" 2>/dev/null)
+    fi
+    return 1
+}
+
+# Try to load OAuth token from MCP if TAVILY_API_KEY is not set
+if [ -z "$TAVILY_API_KEY" ]; then
+    token=$(get_mcp_token) || true
+    if [ -n "$token" ]; then
+        export TAVILY_API_KEY="$token"
+    fi
+fi
 
 JSON_INPUT="$1"
 
@@ -15,7 +41,7 @@ if [ -z "$JSON_INPUT" ]; then
     echo ""
     echo "Optional:"
     echo "  search_depth: \"ultra-fast\", \"fast\", \"basic\" (default), \"advanced\""
-    echo "  topic: \"general\" (default), \"news\", \"finance\""
+    echo "  topic: \"general\" (default)"
     echo "  max_results: 1-20 (default: 5)"
     echo "  chunks_per_source: 1-5 (default: 3, advanced/fast depth only)"
     echo "  time_range: \"day\", \"week\", \"month\", \"year\""
@@ -31,12 +57,42 @@ if [ -z "$JSON_INPUT" ]; then
     echo "  include_favicon: true/false"
     echo ""
     echo "Example:"
-    echo "  ./search.sh '{\"query\": \"latest AI trends\", \"topic\": \"news\", \"time_range\": \"week\"}'"
+    echo "  ./search.sh '{\"query\": \"latest AI trends\", \"time_range\": \"week\"}'"
     exit 1
 fi
 
+# If no token found, auto-run MCP OAuth flow
 if [ -z "$TAVILY_API_KEY" ]; then
-    echo "Error: TAVILY_API_KEY environment variable not set"
+    echo "No Tavily token found. Initiating OAuth flow..."
+    echo "Please complete authentication in your browser..."
+    npx -y mcp-remote https://mcp.tavily.com/mcp --allow-http &
+    MCP_PID=$!
+    
+    # Poll for token with timeout (120 seconds max)
+    TIMEOUT=120
+    ELAPSED=0
+    while [ $ELAPSED -lt $TIMEOUT ]; do
+        sleep 2
+        ELAPSED=$((ELAPSED + 2))
+        
+        # Check for token using the function
+        token=$(get_mcp_token)
+        if [ -n "$token" ]; then
+            export TAVILY_API_KEY="$token"
+            echo "Authentication successful!"
+            break
+        fi
+        
+        echo "Waiting for authentication... (${ELAPSED}s/${TIMEOUT}s)"
+    done
+    
+    # Cleanup MCP process
+    kill $MCP_PID 2>/dev/null || true
+fi
+
+if [ -z "$TAVILY_API_KEY" ]; then
+    echo "Error: Failed to obtain Tavily API token"
+    echo "Please run manually: npx -y mcp-remote https://mcp.tavily.com/mcp"
     exit 1
 fi
 
@@ -52,9 +108,31 @@ if ! echo "$JSON_INPUT" | jq -e '.query' >/dev/null 2>&1; then
     exit 1
 fi
 
-curl -s --request POST \
-    --url https://api.tavily.com/search \
+# Build MCP JSON-RPC request
+MCP_REQUEST=$(jq -n --argjson args "$JSON_INPUT" '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/call",
+    "params": {
+        "name": "tavily_search",
+        "arguments": $args
+    }
+}')
+
+# Call Tavily MCP server via HTTP (SSE response)
+RESPONSE=$(curl -s --request POST \
+    --url "https://mcp.tavily.com/mcp" \
     --header "Authorization: Bearer $TAVILY_API_KEY" \
     --header 'Content-Type: application/json' \
+    --header 'Accept: application/json, text/event-stream' \
     --header 'x-client-source: claude-code-skill' \
-    --data "$JSON_INPUT" | jq '.'
+    --data "$MCP_REQUEST")
+
+# Parse SSE response and extract the JSON result
+JSON_DATA=$(echo "$RESPONSE" | grep '^data:' | sed 's/^data://' | head -1)
+
+if [ -n "$JSON_DATA" ]; then
+    echo "$JSON_DATA" | jq '.result.structuredContent // .result.content[0].text // .error // .' 2>/dev/null || echo "$JSON_DATA"
+else
+    echo "$RESPONSE"
+fi

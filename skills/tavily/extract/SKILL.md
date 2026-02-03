@@ -7,11 +7,15 @@ description: "Extract content from specific URLs using Tavily's extraction API. 
 
 Extract clean content from specific URLs. Ideal when you know which pages you want content from.
 
-## Prerequisites
+## Authentication
 
-**Tavily API Key Required** - Get your key at https://tavily.com
+The script uses OAuth via the Tavily MCP server. **No manual setup required** - on first run, it will:
+1. Check for existing tokens in `~/.mcp-auth/`
+2. If none found, automatically open your browser for OAuth authentication
 
-Add to `~/.claude/settings.json`:
+### Alternative: API Key
+
+If you prefer using an API key, get one at https://tavily.com and add to `~/.claude/settings.json`:
 ```json
 {
   "env": {

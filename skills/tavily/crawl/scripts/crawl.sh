@@ -5,6 +5,32 @@
 
 set -e
 
+# Function to find token from MCP auth cache
+get_mcp_token() {
+    MCP_AUTH_DIR="$HOME/.mcp-auth"
+    if [ -d "$MCP_AUTH_DIR" ]; then
+        # Search recursively for *_tokens.json files
+        while IFS= read -r token_file; do
+            if [ -f "$token_file" ]; then
+                token=$(jq -r '.access_token // empty' "$token_file" 2>/dev/null)
+                if [ -n "$token" ] && [ "$token" != "null" ]; then
+                    echo "$token"
+                    return 0
+                fi
+            fi
+        done < <(find "$MCP_AUTH_DIR" -name "*_tokens.json" 2>/dev/null)
+    fi
+    return 1
+}
+
+# Try to load OAuth token from MCP if TAVILY_API_KEY is not set
+if [ -z "$TAVILY_API_KEY" ]; then
+    token=$(get_mcp_token) || true
+    if [ -n "$token" ]; then
+        export TAVILY_API_KEY="$token"
+    fi
+fi
+
 JSON_INPUT="$1"
 OUTPUT_DIR="$2"
 
@@ -19,17 +45,12 @@ if [ -z "$JSON_INPUT" ]; then
     echo "  max_breadth: integer (default: 20) - Links per page"
     echo "  limit: integer (default: 50) - Total pages cap"
     echo "  instructions: string - Natural language guidance for semantic focus"
-    echo "  chunks_per_source: 1-5 (default: 3, only with instructions)"
     echo "  extract_depth: \"basic\" (default), \"advanced\""
     echo "  format: \"markdown\" (default), \"text\""
     echo "  select_paths: [\"regex1\", \"regex2\"] - Paths to include"
-    echo "  exclude_paths: [\"regex1\", \"regex2\"] - Paths to exclude"
     echo "  select_domains: [\"regex1\"] - Domains to include"
-    echo "  exclude_domains: [\"regex1\"] - Domains to exclude"
     echo "  allow_external: true/false (default: true)"
-    echo "  include_images: true/false"
     echo "  include_favicon: true/false"
-    echo "  timeout: 10-150 seconds (default: 150)"
     echo ""
     echo "Arguments:"
     echo "  output_dir: optional directory to save markdown files"
@@ -39,8 +60,38 @@ if [ -z "$JSON_INPUT" ]; then
     exit 1
 fi
 
+# If no token found, auto-run MCP OAuth flow
 if [ -z "$TAVILY_API_KEY" ]; then
-    echo "Error: TAVILY_API_KEY environment variable not set"
+    echo "No Tavily token found. Initiating OAuth flow..."
+    echo "Please complete authentication in your browser..."
+    npx -y mcp-remote https://mcp.tavily.com/mcp --allow-http &
+    MCP_PID=$!
+    
+    # Poll for token with timeout (120 seconds max)
+    TIMEOUT=120
+    ELAPSED=0
+    while [ $ELAPSED -lt $TIMEOUT ]; do
+        sleep 2
+        ELAPSED=$((ELAPSED + 2))
+        
+        # Check for token using the function
+        token=$(get_mcp_token)
+        if [ -n "$token" ]; then
+            export TAVILY_API_KEY="$token"
+            echo "Authentication successful!"
+            break
+        fi
+        
+        echo "Waiting for authentication... (${ELAPSED}s/${TIMEOUT}s)"
+    done
+    
+    # Cleanup MCP process
+    kill $MCP_PID 2>/dev/null || true
+fi
+
+if [ -z "$TAVILY_API_KEY" ]; then
+    echo "Error: Failed to obtain Tavily API token"
+    echo "Please run manually: npx -y mcp-remote https://mcp.tavily.com/mcp"
     exit 1
 fi
 
@@ -64,18 +115,42 @@ fi
 URL=$(echo "$JSON_INPUT" | jq -r '.url')
 echo "Crawling: $URL"
 
+# Build MCP JSON-RPC request
+MCP_REQUEST=$(jq -n --argjson args "$JSON_INPUT" '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/call",
+    "params": {
+        "name": "tavily_crawl",
+        "arguments": $args
+    }
+}')
+
+# Call Tavily MCP server via HTTP (SSE response)
 RESPONSE=$(curl -s --request POST \
-    --url https://api.tavily.com/crawl \
+    --url "https://mcp.tavily.com/mcp" \
     --header "Authorization: Bearer $TAVILY_API_KEY" \
     --header 'Content-Type: application/json' \
+    --header 'Accept: application/json, text/event-stream' \
     --header 'x-client-source: claude-code-skill' \
-    --data "$JSON_INPUT")
+    --data "$MCP_REQUEST")
+
+# Parse SSE response and extract the JSON result
+JSON_DATA=$(echo "$RESPONSE" | grep '^data:' | sed 's/^data://' | head -1)
+
+if [ -z "$JSON_DATA" ]; then
+    echo "$RESPONSE"
+    exit 1
+fi
+
+# Extract structured content
+RESULT=$(echo "$JSON_DATA" | jq '.result.structuredContent // .result.content[0].text // .error // .' 2>/dev/null)
 
 if [ -n "$OUTPUT_DIR" ]; then
     mkdir -p "$OUTPUT_DIR"
 
     # Save each result as a markdown file
-    echo "$RESPONSE" | jq -r '.results[] | @base64' | while read -r item; do
+    echo "$RESULT" | jq -r '.results[] | @base64' 2>/dev/null | while read -r item; do
         _jq() {
             echo "$item" | base64 --decode | jq -r "$1"
         }
@@ -96,5 +171,5 @@ if [ -n "$OUTPUT_DIR" ]; then
 
     echo "Crawl complete. Files saved to: $OUTPUT_DIR"
 else
-    echo "$RESPONSE" | jq '.'
+    echo "$RESULT" | jq '.'
 fi
