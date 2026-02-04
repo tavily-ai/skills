@@ -5,26 +5,39 @@
 
 set -e
 
-# Function to check if a JWT is expired
-is_token_expired() {
+# Function to decode JWT payload
+decode_jwt_payload() {
     local token="$1"
-    # Extract payload (second part of JWT)
     local payload=$(echo "$token" | cut -d'.' -f2)
-    # Add padding if needed for base64 decode
     local padded_payload="$payload"
     case $((${#payload} % 4)) in
         2) padded_payload="${payload}==" ;;
         3) padded_payload="${payload}=" ;;
     esac
-    # Decode and extract exp claim
-    local exp=$(echo "$padded_payload" | base64 -d 2>/dev/null | jq -r '.exp // empty' 2>/dev/null)
+    echo "$padded_payload" | base64 -d 2>/dev/null
+}
+
+# Function to check if a JWT is valid for Tavily (not expired and correct issuer)
+is_valid_tavily_token() {
+    local token="$1"
+    local payload=$(decode_jwt_payload "$token")
+    
+    # Check if it's a Tavily token (issuer contains tavily)
+    local iss=$(echo "$payload" | jq -r '.iss // empty' 2>/dev/null)
+    if [ -z "$iss" ] || ! echo "$iss" | grep -qi "tavily"; then
+        return 1  # Not a Tavily token
+    fi
+    
+    # Check if expired
+    local exp=$(echo "$payload" | jq -r '.exp // empty' 2>/dev/null)
     if [ -n "$exp" ] && [ "$exp" != "null" ]; then
         local current_time=$(date +%s)
         if [ "$current_time" -ge "$exp" ]; then
-            return 0  # expired
+            return 1  # Expired
         fi
     fi
-    return 1  # not expired (or couldn't determine)
+    
+    return 0  # Valid Tavily token
 }
 
 # Function to find token from MCP auth cache
@@ -36,9 +49,9 @@ get_mcp_token() {
             if [ -f "$token_file" ]; then
                 token=$(jq -r '.access_token // empty' "$token_file" 2>/dev/null)
                 if [ -n "$token" ] && [ "$token" != "null" ]; then
-                    # Check if JWT is expired
-                    if is_token_expired "$token"; then
-                        continue  # Skip expired token
+                    # Check if valid Tavily token (correct issuer and not expired)
+                    if ! is_valid_tavily_token "$token"; then
+                        continue  # Skip invalid/non-Tavily/expired tokens
                     fi
                     echo "$token"
                     return 0
