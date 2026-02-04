@@ -5,6 +5,28 @@
 
 set -e
 
+# Function to check if a JWT is expired
+is_token_expired() {
+    local token="$1"
+    # Extract payload (second part of JWT)
+    local payload=$(echo "$token" | cut -d'.' -f2)
+    # Add padding if needed for base64 decode
+    local padded_payload="$payload"
+    case $((${#payload} % 4)) in
+        2) padded_payload="${payload}==" ;;
+        3) padded_payload="${payload}=" ;;
+    esac
+    # Decode and extract exp claim
+    local exp=$(echo "$padded_payload" | base64 -d 2>/dev/null | jq -r '.exp // empty' 2>/dev/null)
+    if [ -n "$exp" ] && [ "$exp" != "null" ]; then
+        local current_time=$(date +%s)
+        if [ "$current_time" -ge "$exp" ]; then
+            return 0  # expired
+        fi
+    fi
+    return 1  # not expired (or couldn't determine)
+}
+
 # Function to find token from MCP auth cache
 get_mcp_token() {
     MCP_AUTH_DIR="$HOME/.mcp-auth"
@@ -14,6 +36,10 @@ get_mcp_token() {
             if [ -f "$token_file" ]; then
                 token=$(jq -r '.access_token // empty' "$token_file" 2>/dev/null)
                 if [ -n "$token" ] && [ "$token" != "null" ]; then
+                    # Check if JWT is expired
+                    if is_token_expired "$token"; then
+                        continue  # Skip expired token
+                    fi
                     echo "$token"
                     return 0
                 fi

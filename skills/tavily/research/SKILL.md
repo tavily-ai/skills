@@ -1,7 +1,7 @@
 ---
-name: research
-description: "Get AI-synthesized research on any topic with citations. Use when you need comprehensive research grounded in web data without writing code."
----
+
+## name: research  
+description: "Comprehensive research grounded in web data with explicit citations. Use when you need multi-source synthesis—comparisons, current events, market analysis, detailed reports. "
 
 # Research Skill
 
@@ -35,6 +35,7 @@ If you prefer using an API key, get one at https://tavily.com and add to `~/.cla
 ```
 
 **Examples:**
+
 ```bash
 # Basic research
 ./scripts/research.sh '{"input": "quantum computing trends"}'
