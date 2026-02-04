@@ -22,10 +22,10 @@ is_valid_tavily_token() {
     local token="$1"
     local payload=$(decode_jwt_payload "$token")
     
-    # Check if it's a Tavily token (issuer contains tavily)
+    # Check if it's a Tavily token (exact issuer match for security)
     local iss=$(echo "$payload" | jq -r '.iss // empty' 2>/dev/null)
-    if [ -z "$iss" ] || ! echo "$iss" | grep -qi "tavily"; then
-        return 1  # Not a Tavily token
+    if [ "$iss" != "https://mcp.tavily.com/" ]; then
+        return 1  # Not a valid Tavily token
     fi
     
     # Check if expired
@@ -94,7 +94,7 @@ fi
 if [ -z "$TAVILY_API_KEY" ]; then
     echo "No Tavily token found. Initiating OAuth flow..."
     echo "Please complete authentication in your browser..."
-    npx -y mcp-remote https://mcp.tavily.com/mcp --allow-http &
+    npx -y mcp-remote https://mcp.tavily.com/mcp &
     MCP_PID=$!
     
     # Poll for token with timeout (120 seconds max)
@@ -148,7 +148,7 @@ MCP_REQUEST=$(jq -n --argjson args "$JSON_INPUT" '{
     }
 }')
 
-# Call Tavily MCP server via HTTP (SSE response)
+# Call Tavily MCP server via HTTPS (SSE response)
 RESPONSE=$(curl -s --request POST \
     --url "https://mcp.tavily.com/mcp" \
     --header "Authorization: Bearer $TAVILY_API_KEY" \
