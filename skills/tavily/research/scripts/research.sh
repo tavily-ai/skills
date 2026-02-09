@@ -93,34 +93,31 @@ if [ -z "$JSON_INPUT" ]; then
     exit 1
 fi
 
-# If no token found, auto-run MCP OAuth flow
+# If no token found, run MCP OAuth flow
 if [ -z "$TAVILY_API_KEY" ]; then
-    echo "No Tavily token found. Initiating OAuth flow..."
-    echo "Note: You must have an existing Tavily account. Sign up at https://tavily.com if you haven't already."
-    echo "Please complete authentication in your browser..."
-    npx -y mcp-remote https://mcp.tavily.com/mcp &
+    set +e
+    echo "No Tavily token found. Initiating OAuth flow..." >&2
+    echo "Please complete authentication in your browser..." >&2
+    npx -y mcp-remote https://mcp.tavily.com/mcp </dev/null >/dev/null 2>&1 &
     MCP_PID=$!
-    
-    # Poll for token with timeout (120 seconds max)
+
     TIMEOUT=120
     ELAPSED=0
     while [ $ELAPSED -lt $TIMEOUT ]; do
-        sleep 2
-        ELAPSED=$((ELAPSED + 2))
-        
-        # Check for token using the function
-        token=$(get_mcp_token)
+        sleep 3
+        ELAPSED=$((ELAPSED + 3))
+
+        token=$(get_mcp_token) || true
         if [ -n "$token" ]; then
             export TAVILY_API_KEY="$token"
-            echo "Authentication successful!"
+            echo "Authentication successful!" >&2
             break
         fi
-        
-        echo "Waiting for authentication... (${ELAPSED}s/${TIMEOUT}s)"
     done
-    
-    # Cleanup MCP process
+
     kill $MCP_PID 2>/dev/null || true
+    wait $MCP_PID 2>/dev/null || true
+    set -e
 fi
 
 if [ -z "$TAVILY_API_KEY" ]; then
