@@ -56,7 +56,7 @@ If you prefer using an API key, get one at https://tavily.com and add to `~/.cla
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `input` | string | Required | Research topic or question |
-| `model` | string | `"auto"` | Model: `mini`, `pro`, `auto` |
+| `model` | string | `"mini"` | Model: `mini`, `pro`, `auto` |
 
 ## Model Selection
 

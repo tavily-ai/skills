@@ -73,8 +73,7 @@ curl --request POST \
     "query": "machine learning best practices",
     "max_results": 10,
     "search_depth": "advanced",
-    "include_domains": ["arxiv.org", "github.com"],
-    "chunks_per_source": 3
+    "include_domains": ["arxiv.org", "github.com"]
   }'
 ```
 
@@ -98,16 +97,19 @@ POST https://api.tavily.com/search
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `query` | string | Required | Search query (keep under 400 chars) |
-| `max_results` | integer | 5 | Maximum results (0-20) |
+| `max_results` | integer | 10 | Maximum results (0-20) |
 | `search_depth` | string | `"basic"` | `ultra-fast`, `fast`, `basic`, `advanced` |
 | `topic` | string | `"general"` | Search topic (general only) |
-| `chunks_per_source` | integer | 3 | Chunks per source (advanced/fast only) |
 | `time_range` | string | null | `day`, `week`, `month`, `year` |
+| `start_date` | string | null | Return results after this date (`YYYY-MM-DD`) |
+| `end_date` | string | null | Return results before this date (`YYYY-MM-DD`) |
 | `include_domains` | array | [] | Domains to include (max 300) |
 | `exclude_domains` | array | [] | Domains to exclude (max 150) |
-| `include_answer` | boolean | false | Include AI-generated answer |
+| `country` | string | null | Boost results from a specific country (general topic only) |
 | `include_raw_content` | boolean | false | Include full page content |
 | `include_images` | boolean | false | Include image results |
+| `include_image_descriptions` | boolean | false | Include descriptions for images |
+| `include_favicon` | boolean | false | Include favicon URL for each result |
 
 ### Response Format
 

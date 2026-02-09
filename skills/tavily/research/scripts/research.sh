@@ -80,7 +80,7 @@ if [ -z "$JSON_INPUT" ]; then
     echo "  input: string - The research topic or question"
     echo ""
     echo "Optional:"
-    echo "  model: \"mini\", \"pro\", \"auto\" (default)"
+    echo "  model: \"mini\" (default), \"pro\", \"auto\""
     echo "    - mini: Targeted, efficient research for narrow questions"
     echo "    - pro: Comprehensive, multi-agent research for complex topics"
     echo "    - auto: Automatically selects based on query complexity"
@@ -143,7 +143,7 @@ if ! echo "$JSON_INPUT" | jq -e '.input' >/dev/null 2>&1; then
 fi
 
 INPUT=$(echo "$JSON_INPUT" | jq -r '.input')
-MODEL=$(echo "$JSON_INPUT" | jq -r '.model // "auto"')
+MODEL=$(echo "$JSON_INPUT" | jq -r '.model // "mini"')
 
 echo "Researching: $INPUT (model: $MODEL)"
 echo "This may take 30-120 seconds..."
