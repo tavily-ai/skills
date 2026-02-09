@@ -102,6 +102,7 @@ fi
 # If no token found, auto-run MCP OAuth flow
 if [ -z "$TAVILY_API_KEY" ]; then
     echo "No Tavily token found. Initiating OAuth flow..."
+    echo "Note: You must have an existing Tavily account. Sign up at https://tavily.com if you haven't already."
     echo "Please complete authentication in your browser..."
     npx -y mcp-remote https://mcp.tavily.com/mcp &
     MCP_PID=$!
@@ -130,7 +131,8 @@ fi
 
 if [ -z "$TAVILY_API_KEY" ]; then
     echo "Error: Failed to obtain Tavily API token"
-    echo "Please run manually: npx -y mcp-remote https://mcp.tavily.com/mcp"
+    echo "Note: The OAuth flow requires an existing Tavily account — account creation is not supported through this flow."
+    echo "Please sign up at https://tavily.com first, then retry, or set TAVILY_API_KEY manually."
     exit 1
 fi
 
