@@ -6,27 +6,26 @@
 npx skills add https://github.com/tavily-ai/skills
 ```
 
-## Setup
+## Authentication
 
-**Tavily API Key Required** — Get your key at [https://tavily.com](https://tavily.com)
+**No setup required** — Uses OAuth via the Tavily MCP server.
 
-1. Open a terminal and run:
-   ```bash
-   open ~/.claude/settings.json
-   ```
+> **Important:** You must have an existing Tavily account. The OAuth flow only supports login — account creation is not available through this flow. If you don't have an account, [sign up at tavily.com](https://tavily.com) first.
 
-2. Add the following to your `settings.json`:
-   ```json
-   {
-     "env": {
-       "TAVILY_API_KEY": "tvly-your-api-key-here"
-     }
-   }
-   ```
+On first run, the script will:
+1. Check for existing tokens in `~/.mcp-auth/`
+2. If none found, automatically open your browser for OAuth authentication
 
-3. Replace `tvly-your-api-key-here` with your actual API key and save the file.
+### Alternative: API Key
 
-4. Restart Claude Code.
+If you prefer using an API key, get one at [https://tavily.com](https://tavily.com) and add to `~/.claude/settings.json`:
+```json
+{
+  "env": {
+    "TAVILY_API_KEY": "tvly-your-api-key-here"
+  }
+}
+```
 
 ## Available Skills
 
