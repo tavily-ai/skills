@@ -3,9 +3,12 @@
 ## Table of Contents
 
 - [LangChain](#langchain)
+- [Pydantic AI](#pydantic-ai)
 - [LlamaIndex](#llamaindex)
+- [Agno](#agno)
 - [OpenAI Function Calling](#openai-function-calling)
-- [Anthropic Tool Use](#anthropic-tool-use)
+- [Anthropic Tool Calling](#anthropic-tool-calling)
+- [Google ADK](#google-adk)
 - [Vercel AI SDK](#vercel-ai-sdk)
 - [CrewAI](#crewai)
 - [No-Code Platforms](#no-code-platforms)
@@ -14,7 +17,9 @@
 
 ## LangChain
 
-The `langchain-tavily` package is the official LangChain integration supporting Search, Extract, Map, Crawl, and Research.
+We recommend the official `langchain-tavily` package for LangChain integrations.
+
+> Warning: `langchain_community.tools.tavily_search.tool` is deprecated. Migrate to `langchain-tavily` for actively maintained Search, Extract, Map, Crawl, and Research tools.
 
 ### Installation
 
@@ -22,97 +27,204 @@ The `langchain-tavily` package is the official LangChain integration supporting 
 pip install -U langchain-tavily
 ```
 
-### Search
+### Credentials
+
+```python
+import getpass
+import os
+
+if not os.environ.get("TAVILY_API_KEY"):
+    os.environ["TAVILY_API_KEY"] = getpass.getpass("Tavily API key:\n")
+```
+
+### Tavily Search
+
+**Available parameters**
+- `max_results` (default: `5`)
+- `topic` (`"general"`, `"news"`, `"finance"`)
+- `include_answer`
+- `include_raw_content`
+- `include_images`
+- `include_image_descriptions`
+- `search_depth` (`"basic"` or `"advanced"`)
+- `time_range` (`"day"`, `"week"`, `"month"`, `"year"`)
+- `start_date` (`YYYY-MM-DD`)
+- `end_date` (`YYYY-MM-DD`)
+- `include_domains`
+- `exclude_domains`
+- `include_usage`
+
+**Instantiation**
 
 ```python
 from langchain_tavily import TavilySearch
 
-tool = TavilySearch(
+tavily_search = TavilySearch(
     max_results=5,
-    topic="general",  # or "news", "finance"
-    # search_depth="basic",
-    # include_answer=False,
-    # include_raw_content=False,
+    topic="general"
 )
+```
 
-# Direct invocation
-result = tool.invoke({"query": "What happened at Wimbledon?"})
+**Invoke directly with args**
+- Required: `query`
+- Can also be overridden at invocation: `include_images`, `search_depth`, `time_range`, `include_domains`, `exclude_domains`, `start_date`, `end_date`
+- `include_answer` and `include_raw_content` should be set at instantiation time for predictable response sizes
 
-# With agent
+```python
+result = tavily_search.invoke({"query": "What happened at the last Wimbledon?"})
+```
+
+**Use with agent**
+
+```python
 from langchain.agents import create_agent
 from langchain_openai import ChatOpenAI
 
 agent = create_agent(
-    model=ChatOpenAI(model="gpt-4"),
-    tools=[tool],
-    system_prompt="You are a helpful research assistant."
+    model=ChatOpenAI(model="gpt-5"),
+    tools=[tavily_search],
+    system_prompt="You are a helpful research assistant. Use web search to find accurate, up-to-date information.",
 )
 response = agent.invoke({
-    "messages": [{"role": "user", "content": "What are the latest AI trends?"}]
+    "messages": [{
+        "role": "user",
+        "content": "What is the most popular sport in the world? Include only Wikipedia sources.",
+    }]
 })
 ```
 
-**Dynamic parameters at invocation:**
-- `include_images`, `search_depth`, `time_range`, `include_domains`, `exclude_domains`, `start_date`, `end_date`
+Tip: include today's date in the system prompt for time-aware queries.
 
-### Extract
+### Tavily Extract
+
+**Available parameters**
+- `extract_depth` (`"basic"` or `"advanced"`)
+- `include_images`
 
 ```python
 from langchain_tavily import TavilyExtract
 
-tool = TavilyExtract(
+tavily_extract = TavilyExtract(
     extract_depth="basic",  # or "advanced"
-    # include_images=False
+    # include_images=False,
 )
 
-result = tool.invoke({
+result = tavily_extract.invoke({
     "urls": ["https://en.wikipedia.org/wiki/Lionel_Messi"]
 })
 ```
 
-### Map
+### Tavily Map/Crawl
 
 ```python
 from langchain_tavily import TavilyMap
 
-tool = TavilyMap()
+tavily_map = TavilyMap()
 
-result = tool.invoke({
+result = tavily_map.invoke({
     "url": "https://docs.example.com",
     "instructions": "Find all documentation and tutorial pages"
 })
 # Returns: {"base_url": ..., "results": [urls...], "response_time": ...}
 ```
 
-### Crawl
-
 ```python
 from langchain_tavily import TavilyCrawl
 
-tool = TavilyCrawl()
+tavily_crawl = TavilyCrawl()
 
-result = tool.invoke({
+result = tavily_crawl.invoke({
     "url": "https://docs.example.com",
     "instructions": "Extract API documentation and code examples"
 })
 # Returns: {"base_url": ..., "results": [{url, raw_content}...], "response_time": ...}
 ```
 
-### Research
+### Tavily Research
+
+**Available parameters**
+- `input` (required)
+- `model` (`"mini"`, `"pro"`, `"auto"`)
+- `output_schema`
+- `stream`
+- `citation_format` (`"numbered"`, `"mla"`, `"apa"`, `"chicago"`)
 
 ```python
-from langchain_tavily import TavilyResearch, TavilyGetResearch
+from langchain_tavily import TavilyResearch
 
-# Start research
-research_tool = TavilyResearch(model="mini")
-result = research_tool.invoke({
-    "input": "Research the latest developments in AI",
+tavily_research = TavilyResearch()
+
+result = tavily_research.invoke({
+    "input": "Research the latest developments in AI and summarize key trends.",
+    "model": "mini",
     "citation_format": "apa"
 })
+```
 
-# Get results
-get_tool = TavilyGetResearch()
-final = get_tool.invoke({"request_id": result["request_id"]})
+### Tavily Get Research
+
+```python
+from langchain_tavily import TavilyGetResearch
+
+tavily_get_research = TavilyGetResearch()
+final = tavily_get_research.invoke({"request_id": result["request_id"]})
+```
+
+---
+
+## Pydantic AI
+
+Tavily is available for integration through Pydantic AI.
+
+### Introduction
+
+Integrate Tavily with Pydantic AI to enhance your AI agents with powerful web search capabilities. Pydantic AI provides a framework for building AI agents with tools, making it easy to incorporate real-time web search and data extraction into your applications.
+
+### Step-by-Step Integration Guide
+
+#### Step 1: Install Required Packages
+
+Install the necessary Python packages:
+
+```bash
+pip install "pydantic-ai-slim[tavily]"
+```
+
+#### Step 2: Set Up API Keys
+
+- Tavily API Key: [Get your Tavily API key](https://app.tavily.com/home)
+
+Set this as an environment variable:
+
+```bash
+export TAVILY_API_KEY=your_tavily_api_key
+```
+
+#### Step 3: Initialize Pydantic AI Agent with Tavily Tools
+
+```python
+import os
+from pydantic_ai.agent import Agent
+from pydantic_ai.common_tools.tavily import tavily_search_tool
+
+# Get API key from environment
+api_key = os.getenv("TAVILY_API_KEY")
+assert api_key is not None
+
+# Initialize the agent with Tavily tools
+agent = Agent(
+    "openai:o3-mini",
+    tools=[tavily_search_tool(api_key)],
+    system_prompt="Search Tavily for the given query and return the results.",
+)
+```
+
+#### Step 4: Example Use Cases
+
+```python
+# Example 1: Basic search for news
+result = agent.run_sync("Tell me the top news in the GenAI world, give me links.")
+print(result.output)
 ```
 
 ---
@@ -132,6 +244,91 @@ from llama_index.agent.openai import OpenAIAgent
 agent = OpenAIAgent.from_tools(tools)
 response = agent.chat("What are the latest AI developments?")
 ```
+
+---
+
+## Agno
+
+Tavily is available for integration through Agno, a lightweight framework for building agents with tools, memory, and reasoning.
+
+### Introduction
+
+Integrate Tavily with Agno to enhance your AI agents with powerful web search capabilities. Agno makes it easy to incorporate real-time web search and data extraction into your AI applications.
+
+### Step-by-Step Integration Guide
+
+#### Step 1: Install Required Packages
+
+```bash
+pip install agno tavily-python
+```
+
+#### Step 2: Set Up API Keys
+
+- Tavily API Key: [Get your Tavily API key](https://app.tavily.com/home)
+- OpenAI API Key: [Get your OpenAI API key](https://platform.openai.com/api-keys)
+
+Set these as environment variables:
+
+```bash
+export TAVILY_API_KEY=your_tavily_api_key
+export OPENAI_API_KEY=your_openai_api_key
+```
+
+#### Step 3: Initialize Agno Agent with Tavily Tools
+
+```python
+from agno.agent import Agent
+from agno.tools.tavily import TavilyTools
+
+# Initialize the agent with Tavily tools
+agent = Agent(
+    tools=[
+        TavilyTools(
+            search=True,             # Enable search functionality
+            max_tokens=8000,         # Increase max tokens for detailed results
+            search_depth="advanced", # Use advanced search for comprehensive results
+            format="markdown",       # Format results as markdown
+        )
+    ],
+    show_tool_calls=True,
+)
+```
+
+#### Step 4: Example Use Cases
+
+```python
+# Example 1: Basic search with default parameters
+agent.print_response("Latest developments in quantum computing", markdown=True)
+
+# Example 2: Market research with multiple parameters
+agent.print_response(
+    "Analyze the competitive landscape of AI-powered customer service solutions in 2026, "
+    "focusing on market leaders and emerging trends",
+    markdown=True,
+)
+
+# Example 3: Technical documentation search
+agent.print_response(
+    "Find the latest documentation and tutorials about Python async programming, "
+    "focusing on asyncio and FastAPI",
+    markdown=True,
+)
+
+# Example 4: News aggregation
+agent.print_response(
+    "Gather the latest news about artificial intelligence from tech news websites "
+    "published in the last week",
+    markdown=True,
+)
+```
+
+### Additional Use Cases
+
+- Content curation: Gather and organize information from multiple sources
+- Real-time data integration: Keep your AI agents up to date with the latest information
+- Technical documentation: Search and analyze technical documentation
+- Market analysis: Conduct comprehensive market research and analysis
 
 ---
 
@@ -195,64 +392,221 @@ if response.choices[0].message.tool_calls:
 
 ---
 
-## Anthropic Tool Use
+## Anthropic Tool Calling
 
-Define Tavily as an Anthropic tool:
+Integrate Tavily with Anthropic Claude to add real-time web search in tool-calling workflows.
+
+### Installation
+
+```bash
+pip install anthropic tavily-python
+```
+
+### Setup
+
+```bash
+export ANTHROPIC_API_KEY="your-anthropic-api-key"
+export TAVILY_API_KEY="your-tavily-api-key"
+```
+
+### Using Tavily With Anthropic Tool Calling
 
 ```python
+import json
+import os
 from anthropic import Anthropic
 from tavily import TavilyClient
-import json
 
-anthropic_client = Anthropic()
-tavily_client = TavilyClient()
+client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+tavily_client = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
+MODEL_NAME = "claude-sonnet"
+```
 
-tools = [{
-    "name": "web_search",
-    "description": "Search the web for current information using Tavily",
-    "input_schema": {
-        "type": "object",
-        "properties": {
-            "query": {
-                "type": "string",
-                "description": "The search query"
-            }
-        },
-        "required": ["query"]
-    }
-}]
+### Implementation
 
-def process_tool_use(tool_use):
-    if tool_use.name == "web_search":
-        return tavily_client.search(tool_use.input["query"])
+#### System prompt
 
-# Initial request
-response = anthropic_client.messages.create(
-    model="claude-sonnet-4-20250514",
-    max_tokens=1024,
-    tools=tools,
-    messages=[{"role": "user", "content": "What are the latest AI trends?"}]
+```python
+SYSTEM_PROMPT = (
+    "You are a research assistant. Use the tavily_search tool when needed. "
+    "After tools run and tool results are provided back to you, produce a concise, "
+    "well-structured summary with key bullets and a Sources section listing URLs."
 )
+```
 
-# Handle tool use
-if response.stop_reason == "tool_use":
-    tool_use = next(b for b in response.content if b.type == "tool_use")
-    search_results = process_tool_use(tool_use)
+#### Tool schema
 
-    # Continue with results
-    final = anthropic_client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=1024,
+```python
+tools = [
+    {
+        "name": "tavily_search",
+        "description": "Search the web using Tavily and return relevant links and summaries.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Search query string."},
+                "max_results": {"type": "integer", "default": 5},
+                "search_depth": {
+                    "type": "string",
+                    "enum": ["basic", "advanced"],
+                    "default": "basic",
+                },
+            },
+            "required": ["query"],
+        },
+    }
+]
+```
+
+#### Tool execution
+
+```python
+def tavily_search(**kwargs):
+    return tavily_client.search(**kwargs)
+
+def process_tool_call(name, args):
+    if name == "tavily_search":
+        return tavily_search(**args)
+    raise ValueError(f"Unknown tool: {name}")
+```
+
+#### Main chat function
+
+```python
+def chat_with_claude(user_message: str):
+    # Call 1: allow tool use
+    initial_response = client.messages.create(
+        model=MODEL_NAME,
+        max_tokens=4096,
+        system=SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": [{"type": "text", "text": user_message}]}],
         tools=tools,
+    )
+
+    # If Claude answers without tools, return text directly
+    if initial_response.stop_reason != "tool_use":
+        return "".join(
+            block.text for block in initial_response.content
+            if getattr(block, "type", None) == "text"
+        )
+
+    # Execute all requested tools
+    tool_result_blocks = []
+    for block in initial_response.content:
+        if getattr(block, "type", None) == "tool_use":
+            result = process_tool_call(block.name, block.input)
+            tool_result_blocks.append(
+                {
+                    "type": "tool_result",
+                    "tool_use_id": block.id,
+                    "content": json.dumps(result),
+                }
+            )
+
+    # Call 2: send tool results and ask Claude for final synthesis
+    final_response = client.messages.create(
+        model=MODEL_NAME,
+        max_tokens=4096,
+        system=SYSTEM_PROMPT,
         messages=[
-            {"role": "user", "content": "What are the latest AI trends?"},
-            {"role": "assistant", "content": response.content},
-            {"role": "user", "content": [
-                {"type": "tool_result", "tool_use_id": tool_use.id, "content": json.dumps(search_results)}
-            ]}
-        ]
+            {"role": "user", "content": [{"type": "text", "text": user_message}]},
+            {"role": "assistant", "content": initial_response.content},
+            {"role": "user", "content": tool_result_blocks},
+            {
+                "role": "user",
+                "content": [{
+                    "type": "text",
+                    "text": "Please synthesize the final answer now based on the tool results above. Include 3-7 bullets and a Sources section with URLs.",
+                }],
+            },
+        ],
+    )
+
+    return "".join(
+        block.text for block in final_response.content
+        if getattr(block, "type", None) == "text"
     )
 ```
+
+### Usage example
+
+```python
+chat_with_claude("What is trending now in the agents space in 2026?")
+```
+
+Reference: https://docs.tavily.com/documentation/integrations/anthropic
+
+---
+
+## Google ADK
+
+Google ADK can connect to Tavily through Tavily's remote MCP server, giving your Gemini-based agent live search, extraction, and site exploration capabilities.
+
+### Prerequisites
+
+- Python 3.9+
+- Tavily API key: https://app.tavily.com/home
+- Gemini API key: https://aistudio.google.com/app/apikey
+
+### Installation
+
+```bash
+pip install google-adk mcp
+```
+
+### Agent Setup
+
+```python
+import os
+from google.adk.agents import Agent
+from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPServerParams
+from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
+
+tavily_api_key = os.getenv("TAVILY_API_KEY")
+
+root_agent = Agent(
+    model="gemini-2.5-pro",
+    name="tavily_agent",
+    instruction=(
+        "You are a helpful assistant that uses Tavily to search the web, "
+        "extract content, and explore websites. Use Tavily tools to provide "
+        "up-to-date information."
+    ),
+    tools=[
+        MCPToolset(
+            connection_params=StreamableHTTPServerParams(
+                url="https://mcp.tavily.com/mcp/",
+                headers={"Authorization": f"Bearer {tavily_api_key}"},
+            )
+        )
+    ],
+)
+```
+
+### Environment Variables
+
+```bash
+export GOOGLE_API_KEY="your_gemini_api_key_here"
+export TAVILY_API_KEY="your_tavily_api_key_here"
+```
+
+### Run
+
+```bash
+adk create my_agent
+adk run my_agent
+# Optional web UI:
+adk web --port 8000
+```
+
+### Available Tavily MCP tools
+
+- `tavily-search`
+- `tavily-extract`
+- `tavily-map`
+- `tavily-crawl`
+
+Reference: https://docs.tavily.com/documentation/integrations/google-adk
 
 ---
 
@@ -357,22 +711,7 @@ Tavily integrates with popular no-code automation platforms:
 | **FlowiseAI** | Search | Visual LLM builders, RAG systems |
 | **Langflow** | Search, Extract | Visual agent building |
 
-### Common Use Cases
-
-- **Lead enrichment**: Trigger on new CRM record → Search company info → Update record
-- **Market monitoring**: Schedule → Search industry news → Send digest
-- **Content research**: Trigger → Multi-search → LLM summarize → Store results
-
 ---
 
 ## Additional Integrations
-
-| Framework | Package/Tool | Notes |
-|-----------|--------------|-------|
-| Pydantic AI | `pydantic-ai-slim[tavily]` | Type-safe AI agents |
-| Google ADK | MCP Server | Gemini-powered agents |
-| Composio | Composio platform | Multi-tool orchestration |
-| Agno | `agno` + `tavily-python` | Lightweight agent framework |
-| Tines | Native integration | Security automation |
-
 See the [full integrations documentation](https://docs.tavily.com/documentation/integrations) for complete guides.
