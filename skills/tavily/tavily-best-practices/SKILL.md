@@ -7,21 +7,6 @@ description: "Build production-ready Tavily integrations with best practices bak
 
 Tavily is a search API designed for LLMs, enabling AI applications to access real-time web data.
 
-## Prerequisites
-
-**Tavily API Key Required** - Get your key at https://app.tavily.com (1,000 free API credits/month, no credit card required)
-
-Add to `~/.claude/settings.json`:
-```json
-{
-  "env": {
-    "TAVILY_API_KEY": "tvly-YOUR_API_KEY"
-  }
-}
-```
-
-Restart Claude Code after adding your API key.
-
 ## Installation
 
 **Python:**
