@@ -55,7 +55,6 @@ Controls the latency vs. relevance tradeoff:
 |-----------|------|---------|-------------|
 | `query` | string | Required | Search query (keep under 400 chars) |
 | `search_depth` | enum | `"basic"` | `"ultra-fast"`, `"fast"`, `"basic"`, `"advanced"` |
-| `topic` | enum | `"general"` | `"general"`, `"news"` (adds `published_date`), `"finance"` |
 | `chunks_per_source` | integer | 3 | Chunks per source (advanced/fast depth only) |
 | `max_results` | integer | 5 | Maximum results (0-20) |
 | `time_range` | enum | null | `"day"`, `"week"`, `"month"`, `"year"` |
@@ -63,7 +62,7 @@ Controls the latency vs. relevance tradeoff:
 | `end_date` | string | null | Results before date (YYYY-MM-DD) |
 | `include_domains` | array | [] | Domains to include (max 300, supports wildcards like `*.com`) |
 | `exclude_domains` | array | [] | Domains to exclude (max 150) |
-| `country` | enum | null | Boost results from country (general topic only) |
+| `country` | enum | null | Boost results from country |
 | `include_answer` | bool/enum | false | `true`/`"basic"` or `"advanced"` for LLM answer |
 | `include_raw_content` | bool/enum | false | `true`/`"markdown"` or `"text"` for full page |
 | `include_images` | boolean | false | Include image results |
@@ -77,8 +76,6 @@ Controls the latency vs. relevance tradeoff:
 - **`include_answer`**: Only use if you don't want to bring your own LLM. Most users bring their own model.
 
 - **`auto_parameters`**: May set `search_depth="advanced"` (2 credits). Set `search_depth` manually to control cost.
-
-- **`topic="news"`**: Returns `published_date` metadata. Use for current events, politics, sports.
 
 
 ## Basic Usage
@@ -118,13 +115,6 @@ response = client.search(
     exclude_domains=["reddit.com", "quora.com"]
 )
 
-# Wildcard: limit to .com, exclude specific site
-response = client.search(
-    query="AI news",
-    include_domains=["*.com"],
-    exclude_domains=["example.com"]
-)
-
 # Restrict to LinkedIn profiles
 response = client.search(
     query="CEO background at Google",
@@ -144,16 +134,6 @@ response = client.search(
     start_date="2025-01-01",
     end_date="2025-02-01"
 )
-```
-
-### By topic
-
-```python
-# News sources (includes published_date)
-response = client.search(query="What happened today in NY?", topic="news")
-
-# Finance-focused
-response = client.search(query="AAPL earnings", topic="finance")
 ```
 
 ### By country
@@ -216,7 +196,6 @@ asyncio.run(fetch_and_gather())
 | `content` | Extracted text snippet(s) |
 | `score` | Semantic relevance score (0-1) |
 | `raw_content` | Full page content (if `include_raw_content` enabled) |
-| `published_date` | Publication date (if `topic="news"`) |
 | `favicon` | Favicon URL (if `include_favicon=True`) |
 
 **Top-level response also includes:**

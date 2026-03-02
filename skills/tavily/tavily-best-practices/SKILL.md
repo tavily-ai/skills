@@ -26,14 +26,11 @@ See **[references/sdk.md](references/sdk.md)** for complete SDK reference.
 ```python
 from tavily import TavilyClient
 
-# Option 1: Uses TAVILY_API_KEY env var (recommended)
+# Uses TAVILY_API_KEY env var (recommended)
 client = TavilyClient()
 
-# Option 2: Explicit API key
-client = TavilyClient(api_key="tvly-YOUR_API_KEY")
-
-# Option 3: With project tracking (for usage organization)
-client = TavilyClient(api_key="tvly-YOUR_API_KEY", project_id="your-project-id")
+#With project tracking (for usage organization)
+client = TavilyClient(project_id="your-project-id")
 
 # Async client for parallel queries
 from tavily import AsyncTavilyClient
@@ -65,54 +62,49 @@ async_client = AsyncTavilyClient()
 response = client.search(
     query="quantum computing breakthroughs",  # Keep under 400 chars
     max_results=10,
-    search_depth="advanced",  # 2 credits, highest relevance
-    topic="general"  # or "news", "finance"
+    search_depth="advanced"
 )
-
-for result in response["results"]:
-    print(f"{result['title']}: {result['score']}")
+print(response)
 ```
+Key parameters: `query`, `max_results`, `search_depth` (ultra-fast/fast/basic/advanced), `include_domains`, `exclude_domains`, `time_range`
 
-Key parameters: `query`, `max_results`, `search_depth` (ultra-fast/fast/basic/advanced), `topic`, `include_domains`, `exclude_domains`, `time_range`
+See **[references/search.md](references/search.md)** for complete search reference.
 
 ### extract() - URL Content Extraction
 
 ```python
-# Two-step pattern (recommended for control)
-search_results = client.search(query="Python async best practices")
-urls = [r["url"] for r in search_results["results"] if r["score"] > 0.5]
-extracted = client.extract(
-    urls=urls[:20],
-    query="async patterns",  # Reranks chunks by relevance
-    chunks_per_source=3  # Prevents context explosion
+# Simple one-step extraction
+response = client.extract(
+    urls=["https://docs.example.com"],
+    extract_depth="advanced"
 )
+print(response)
 ```
-
 Key parameters: `urls` (max 20), `extract_depth`, `query`, `chunks_per_source` (1-5)
+
+See **[references/extract.md](references/extract.md)** for complete extract reference.
 
 ### crawl() - Site-Wide Extraction
 
 ```python
 response = client.crawl(
     url="https://docs.example.com",
-    max_depth=2,
     instructions="Find API documentation pages",  # Semantic focus
-    chunks_per_source=3,  # Token optimization
-    select_paths=["/docs/.*", "/api/.*"]
+    extract_depth="advanced"
 )
+print(response)
 ```
-
 Key parameters: `url`, `max_depth`, `max_breadth`, `limit`, `instructions`, `chunks_per_source`, `select_paths`, `exclude_paths`
+
+See **[references/crawl.md](references/crawl.md)** for complete crawl reference.
 
 ### map() - URL Discovery
 
 ```python
 response = client.map(
-    url="https://docs.example.com",
-    max_depth=2,
-    instructions="Find all API and guide pages"
+    url="https://docs.example.com"
 )
-api_docs = [url for url in response["results"] if "/api/" in url]
+print(response)
 ```
 
 ### research() - AI-Powered Research
@@ -137,6 +129,8 @@ print(response["content"])  # The research report
 ```
 
 Key parameters: `input`, `model` ("mini"/"pro"/"auto"), `stream`, `output_schema`, `citation_format`
+
+See **[references/research.md](references/research.md)** for complete research reference.
 
 ## Detailed Guides
 
