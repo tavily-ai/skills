@@ -10,7 +10,7 @@ npx skills add https://github.com/tavily-ai/skills
 
 **No setup required** — Uses OAuth via the Tavily MCP server.
 
-> **Important:** You must have an existing Tavily account. The OAuth flow only supports login — account creation is not available through this flow. If you don't have an account, [sign up at tavily.com](https://tavily.com) first.
+> If you don't have a Tavily account, you can create one directly through the OAuth flow using your Google or GitHub account. Alternatively, [sign up at tavily.com](https://tavily.com).
 
 On first run, the script will:
 1. Check for existing tokens in `~/.mcp-auth/`
