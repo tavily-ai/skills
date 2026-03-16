@@ -13,7 +13,7 @@ Web search returning LLM-optimized results with content snippets and relevance s
 
 Requires the Tavily CLI. See [tavily-cli](../tavily-cli/SKILL.md) for install and auth setup.
 
-Quick install: `pip install tavily-cli && tvly login`
+Quick install: `uv tool install tavily-cli && tvly login` (or `pip install tavily-cli`)
 
 ## When to use
 

@@ -13,7 +13,7 @@ AI-powered deep research that gathers sources, analyzes them, and produces a cit
 
 Requires the Tavily CLI. See [tavily-cli](../tavily-cli/SKILL.md) for install and auth setup.
 
-Quick install: `pip install tavily-cli && tvly login`
+Quick install: `uv tool install tavily-cli && tvly login` (or `pip install tavily-cli`)
 
 ## When to use
 
