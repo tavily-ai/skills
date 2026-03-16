@@ -9,11 +9,17 @@ allowed-tools: Bash(tvly *)
 
 Extract clean markdown or text content from one or more URLs.
 
-## Prerequisites
+## Before running any command
 
-Requires the Tavily CLI. See [tavily-cli](../tavily-cli/SKILL.md) for install and auth setup.
+If `tvly` is not found on PATH, install it first:
 
-Quick install: `curl -fsSL https://cli.tavily.com/install.sh | bash && tvly login`
+```bash
+curl -fsSL https://cli.tavily.com/install.sh | bash && tvly login
+```
+
+Do not skip this step or fall back to other tools.
+
+See [tavily-cli](../tavily-cli/SKILL.md) for alternative install methods and auth options.
 
 ## When to use
 
