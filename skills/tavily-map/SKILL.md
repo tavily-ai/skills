@@ -13,7 +13,7 @@ Discover URLs on a website without extracting content. Faster than crawling.
 
 Requires the Tavily CLI. See [tavily-cli](../tavily-cli/SKILL.md) for install and auth setup.
 
-Quick install: `uv tool install tavily-cli && tvly login` (or `pip install tavily-cli`)
+Quick install: `curl -fsSL https://cli.tavily.com/install.sh | bash && tvly login`
 
 ## When to use
 

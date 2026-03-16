@@ -16,11 +16,13 @@ npx skills add https://github.com/tavily-ai/skills
 The skills require the Tavily CLI (`tvly`) to be installed:
 
 ```bash
-# Recommended (isolated install)
-uv tool install tavily-cli
+curl -fsSL https://cli.tavily.com/install.sh | bash
+```
 
-# Alternative
-pip install tavily-cli
+Or install manually:
+
+```bash
+uv tool install tavily-cli   # or: pip install tavily-cli
 ```
 
 ### Authenticate
