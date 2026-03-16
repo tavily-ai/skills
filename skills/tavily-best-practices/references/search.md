@@ -55,6 +55,7 @@ Controls the latency vs. relevance tradeoff:
 |-----------|------|---------|-------------|
 | `query` | string | Required | Search query (keep under 400 chars) |
 | `search_depth` | enum | `"basic"` | `"ultra-fast"`, `"fast"`, `"basic"`, `"advanced"` |
+| `topic` | enum | `"general"` | `"general"`, `"news"`, `"finance"` |
 | `chunks_per_source` | integer | 3 | Chunks per source (advanced/fast depth only) |
 | `max_results` | integer | 5 | Maximum results (0-20) |
 | `time_range` | enum | null | `"day"`, `"week"`, `"month"`, `"year"` |
