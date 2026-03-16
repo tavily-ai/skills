@@ -277,7 +277,7 @@ def print_research_result(data: dict, *, json_mode: bool, output_file: str | Non
     content = data.get("content", "")
     sources = data.get("sources", [])
 
-    if status != "completed":
+    if status != "completed" and not content:
         console.print(f"[bold]Status:[/bold] {status}")
         if data.get("error"):
             console.print(f"[#FAA2FB]Error:[/#FAA2FB] {data['error']}")
