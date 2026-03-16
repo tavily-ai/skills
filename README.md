@@ -1,6 +1,6 @@
 # Tavily Agent Skills
 
-Web search, content extraction, site crawling, URL discovery, and deep research — powered by the [Tavily CLI](https://github.com/tavily-ai/tavily-cli).
+Web search, content extraction, site crawling, URL discovery, and deep research — powered by the Tavily CLI.
 
 ## Installation
 
@@ -9,10 +9,6 @@ Web search, content extraction, site crawling, URL discovery, and deep research 
 ```bash
 # Agent skills (Claude Code, Cursor, etc.)
 npx skills add https://github.com/tavily-ai/skills
-
-# Claude Code plugin
-/plugin marketplace add tavily-ai/skills
-/plugin install tavily@tavily-plugins
 ```
 
 ### Install the Tavily CLI
