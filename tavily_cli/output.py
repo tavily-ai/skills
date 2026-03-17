@@ -14,10 +14,20 @@ from rich.panel import Panel
 from rich.rule import Rule
 from rich.table import Table
 from rich.text import Text
+from rich.theme import Theme
 from rich.tree import Tree
 
 
-console = Console()
+# Override Rich's default markdown heading colors to use brand AQUA
+_theme = Theme({
+    "markdown.h1": "bold #5CD9E6",
+    "markdown.h2": "bold #5CD9E6",
+    "markdown.h3": "bold #5CD9E6",
+    "markdown.h4": "bold #5CD9E6",
+    "markdown.h5": "bold #5CD9E6",
+    "markdown.h6": "bold #5CD9E6",
+})
+console = Console(theme=_theme)
 err_console = Console(stderr=True)
 
 
@@ -106,7 +116,7 @@ def print_search_results(data: dict, *, json_mode: bool, output_file: str | None
         header.append("  ")
         header.append_text(_score_label(score))
         console.print(header)
-        console.print(f"   [link={url}]{_domain(url)}[/link]", style="#FAA2FB")
+        console.print(f"   [link={url}]{_domain(url)}[/link]", style="#9BC0AE")
         if content:
             snippet = content[:300]
             if len(content) > 300:
@@ -157,7 +167,7 @@ def print_extract_results(data: dict, *, json_mode: bool, output_file: str | Non
     if failed:
         console.print("[#FFC769]Failed extractions:[/#FFC769]")
         for f_item in failed:
-            console.print(f"  [#FAA2FB]x[/#FAA2FB] {f_item.get('url')}: {f_item.get('error')}")
+            console.print(f"  [#9BC0AE]x[/#9BC0AE] {f_item.get('url')}: {f_item.get('error')}")
 
     response_time = data.get("response_time")
     _footer("Extract", len(results), f"extracted, {len(failed)} failed", response_time)
@@ -280,7 +290,7 @@ def print_research_result(data: dict, *, json_mode: bool, output_file: str | Non
     if status != "completed" and not content:
         console.print(f"[bold]Status:[/bold] {status}")
         if data.get("error"):
-            console.print(f"[#FAA2FB]Error:[/#FAA2FB] {data['error']}")
+            console.print(f"[#9BC0AE]Error:[/#9BC0AE] {data['error']}")
         return
 
     # Render the research report as markdown
@@ -296,7 +306,7 @@ def print_research_result(data: dict, *, json_mode: bool, output_file: str | Non
         table = Table(title=f"Sources ({len(sources)})", show_lines=False, padding=(0, 1))
         table.add_column("#", style="bold #8385F9", width=4)
         table.add_column("Title", style="bold", ratio=2)
-        table.add_column("URL", style="#FAA2FB", ratio=3)
+        table.add_column("URL", style="#9BC0AE", ratio=3)
 
         for i, s in enumerate(sources, 1):
             title = s.get("title", "")
