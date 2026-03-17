@@ -11,6 +11,7 @@ from tavily_cli.commands.extract import extract
 from tavily_cli.commands.map_cmd import map_urls
 from tavily_cli.commands.research import research
 from tavily_cli.commands.search import search
+from tavily_cli.commands.skills import skills
 
 
 @click.group(invoke_without_command=True)
@@ -92,6 +93,8 @@ def _print_welcome() -> None:
     commands.append("    tvly research ", style="#9BC0AE")
     commands.append('"your query"', style="dim")
     commands.append("          Deep research\n")
+    commands.append("    tvly skills", style="#9BC0AE")
+    commands.append("                          Install agent skills\n")
 
     console.print(commands)
     console.print("  [dim]Add --json to any command for machine-readable output.[/dim]")
@@ -146,6 +149,7 @@ cli.add_command(extract)
 cli.add_command(crawl)
 cli.add_command(map_urls)
 cli.add_command(research)
+cli.add_command(skills)
 
 
 def main() -> None:
