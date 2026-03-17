@@ -46,5 +46,5 @@ def spinner(message: str, *, json_mode: bool = False) -> Generator[None, None, N
         yield
         return
 
-    with err_console.status(f"[{BRAND}]{message}[/{BRAND}]", spinner="dots") as _status:
+    with err_console.status(f"[{AQUA}]{message}[/{AQUA}]", spinner="dots") as _status:
         yield
