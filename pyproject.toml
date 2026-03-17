@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "tavily-cli"
 version = "0.1.0"
 description = "CLI and agent tools for the Tavily API — search, extract, crawl, map, and research from the command line."
-readme = "README.md"
+readme = "tavily_cli/README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [
