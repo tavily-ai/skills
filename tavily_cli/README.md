@@ -22,7 +22,7 @@ Requires **Python 3.10+**.
 ### Quick install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tavily-ai/skills/main/install.sh | sh
+curl -fsSL https://cli.tavily.com/install.sh | bash
 ```
 
 This will detect your environment and install via `uv` (fastest), `pipx`, or `pip`.
