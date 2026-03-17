@@ -48,14 +48,26 @@ def install(extra_args: tuple[str, ...]) -> None:
     """
     from tavily_cli.theme import err_console
 
+    returncode = run_skills_install(extra_args)
+    raise SystemExit(returncode)
+
+
+def run_skills_install(extra_args: tuple[str, ...] = ()) -> int:
+    """Run `npx skills add` and return the process exit code.
+
+    Reusable so other commands (e.g. login) can trigger a skills install
+    without going through Click dispatch.
+    """
+    from tavily_cli.theme import err_console
+
     if not shutil.which("npx"):
         err_console.print()
         err_console.print("  [#FAA2FB]> npx not found.[/#FAA2FB]")
         err_console.print()
         err_console.print("  Install Node.js to get npx: [link=https://nodejs.org]nodejs.org[/link]")
         err_console.print()
-        raise SystemExit(1)
+        return 1
 
     cmd = ["npx", "-y", "skills", "add", SKILLS_REPO, "--yes", "--full-depth", "--global", *extra_args]
     result = subprocess.run(cmd)
-    raise SystemExit(result.returncode)
+    return result.returncode
