@@ -118,7 +118,31 @@ def _print_login_success(method: str, detail: str) -> None:
     hints.append("    tvly research ", style="#9BC0AE")
     hints.append('"deep dive topic"', style="dim")
     hints.append("\n")
+    hints.append("    tvly skills install", style="#9BC0AE")
+    hints.append("\n")
     console.print(hints)
+
+    _prompt_skills_install()
+
+
+def _prompt_skills_install() -> None:
+    """Ask the user if they'd like to install Tavily agent skills."""
+    import shutil
+
+    from tavily_cli.theme import console
+
+    if not shutil.which("npx"):
+        return
+
+    if not click.confirm("  Install Tavily agent skills? (for Claude Code, Cursor, etc.)", default=True):
+        console.print()
+        console.print("  [dim]You can install later with:[/dim] [#9BC0AE]tvly skills install[/#9BC0AE]")
+        console.print()
+        return
+
+    console.print()
+    from tavily_cli.commands.skills import run_skills_install
+    run_skills_install()
 
 
 @click.command()
