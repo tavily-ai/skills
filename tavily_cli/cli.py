@@ -93,8 +93,8 @@ def _print_welcome() -> None:
     commands.append("    tvly research ", style="#9BC0AE")
     commands.append('"your query"', style="dim")
     commands.append("          Deep research\n")
-    commands.append("    tvly skills", style="#9BC0AE")
-    commands.append("                          Install agent skills\n")
+    commands.append("    tvly skills install", style="#9BC0AE")
+    commands.append("                  Install agent skills\n")
 
     console.print(commands)
     console.print("  [dim]Add --json to any command for machine-readable output.[/dim]")

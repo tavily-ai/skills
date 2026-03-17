@@ -20,7 +20,7 @@ from tavily_cli.theme import LOGO
 err_console = Console(stderr=True)
 
 # Commands that the REPL recognises (mapped by the CLI group).
-_REPL_COMMANDS = {"search", "extract", "crawl", "map", "research", "login", "logout", "auth"}
+_REPL_COMMANDS = {"search", "extract", "crawl", "map", "research", "login", "logout", "auth", "skills"}
 
 
 def _print_banner() -> None:
@@ -52,6 +52,8 @@ def _print_banner() -> None:
     tips.append("research ", style="#9BC0AE")
     tips.append('"topic"', style="dim")
     tips.append("  |  ", style="dim")
+    tips.append("skills install", style="#9BC0AE")
+    tips.append("  |  ", style="dim")
     tips.append("help", style="#9BC0AE")
     tips.append("  |  ", style="dim")
     tips.append("exit", style="#9BC0AE")
@@ -80,6 +82,8 @@ def _print_help() -> None:
     cmds.append("                        Clear credentials\n")
     cmds.append("    auth", style="#9BC0AE")
     cmds.append("                          Auth status\n")
+    cmds.append("    skills install", style="#9BC0AE")
+    cmds.append("                  Install agent skills\n")
     cmds.append("    exit / quit / Ctrl+C", style="#9BC0AE")
     cmds.append("          Leave\n")
     err_console.print(cmds)
