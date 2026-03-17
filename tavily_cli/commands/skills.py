@@ -23,13 +23,28 @@ def skills() -> None:
 def install(extra_args: tuple[str, ...]) -> None:
     """Install Tavily agent skills into your project.
 
-    Runs: npx skills add https://github.com/tavily-ai/skills
+    Runs: npx -y skills add https://github.com/tavily-ai/skills
 
-    Any extra flags are forwarded to `npx skills`, for example:
+    All flags after `install` are forwarded directly to `npx skills add`.
+    Common options:
 
     \b
-        tvly skills install --global              Install skills globally
+        -g, --global             Install globally (user-level)
+        -a, --agent <agents>     Target specific agents (e.g. claude-code cursor)
+        -s, --skill <skills>     Install specific skills (e.g. tavily-search)
+        -y, --yes                Skip confirmation prompts
+        --all                    All skills, all agents, no prompts
+        --full-depth             Search all subdirectories
+        --copy                   Copy files instead of symlinking
+
+    \b
+    Examples:
+        tvly skills install                        Install interactively
+        tvly skills install --global               Install globally
         tvly skills install --skill tavily-search  Install a specific skill
+        tvly skills install --all                  Install everything, no prompts
+
+    Full docs: https://github.com/vercel-labs/skills
     """
     from tavily_cli.theme import err_console
 
@@ -41,6 +56,6 @@ def install(extra_args: tuple[str, ...]) -> None:
         err_console.print()
         raise SystemExit(1)
 
-    cmd = ["npx", "-y", "skills", "add", SKILLS_REPO, *extra_args]
+    cmd = ["npx", "-y", "skills", "add", SKILLS_REPO, "--yes", "--full-depth", "--global", *extra_args]
     result = subprocess.run(cmd)
     raise SystemExit(result.returncode)
