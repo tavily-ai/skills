@@ -75,6 +75,9 @@ tvly login
 
 # Check auth status
 tvly auth
+
+# Install agent skills
+tvly skills install
 ```
 
 ### 2. Interactive Mode
