@@ -26,6 +26,8 @@ from tavily_cli.common import handle_api_error, json_option
 @click.option("--include-image-descriptions", is_flag=True, default=False, help="Include AI image descriptions.")
 @click.option("--chunks-per-source", type=int, default=None, help="Chunks per source (advanced/fast depth only).")
 @click.option("--output", "-o", "output_file", default=None, help="Save output to file.")
+@click.option("--filter", "filter_instructions", is_flag=False, flag_value="", default=None,
+              help="Request filtered results. Automatically fetches raw page content. Optionally pass instructions.")
 @json_option
 def search(
     query: str | None,
@@ -44,6 +46,7 @@ def search(
     include_image_descriptions: bool,
     chunks_per_source: int | None,
     output_file: str | None,
+    filter_instructions: str | None,
     json_output: bool,
 ) -> None:
     """Search the web using Tavily.
@@ -58,6 +61,8 @@ def search(
     if not query:
         raise click.UsageError("QUERY is required. Pass a query string or use '-' to read from stdin.")
 
+    filtering = filter_instructions is not None
+
     client = get_client()
 
     kwargs: dict = {"query": query}
@@ -65,6 +70,8 @@ def search(
         kwargs["search_depth"] = search_depth
     if max_results is not None:
         kwargs["max_results"] = max_results
+    elif filtering:
+        kwargs["max_results"] = 8
     if topic is not None:
         kwargs["topic"] = topic
     if time_range is not None:
@@ -83,6 +90,8 @@ def search(
         kwargs["include_answer"] = include_answer
     if include_raw_content is not None:
         kwargs["include_raw_content"] = include_raw_content
+    elif filtering:
+        kwargs["include_raw_content"] = "markdown"
     if include_images:
         kwargs["include_images"] = True
     if include_image_descriptions:
@@ -97,5 +106,11 @@ def search(
             response = client.search(**kwargs)
     except Exception as e:
         handle_api_error(e, json_output)
+
+    if filtering:
+        response["filtering"] = {
+            "requested": True,
+            "instructions": filter_instructions or None,
+        }
 
     print_search_results(response, json_mode=json_output, output_file=output_file)

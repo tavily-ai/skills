@@ -22,7 +22,7 @@ def _read_config() -> dict:
 
 
 def _write_config(data: dict) -> None:
-    old_umask = os.umask(0o077)  # ensure new files are owner-only from creation, sets the new umask to 0o077 and returns whatever the previous umask was.
+    old_umask = os.umask(0o077)  # ensure new files are owner-only from creation, sets the new umask to 0o077 and returns whatever the previous umask is.
     try:
         CONFIG_DIR.mkdir(parents=True, exist_ok=True)
         CONFIG_DIR.chmod(0o700)
