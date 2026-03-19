@@ -11,17 +11,37 @@ from tavily_cli.common import handle_api_error, json_option
 
 @click.command()
 @click.argument("query", required=False)
-@click.option("--depth", "search_depth", type=click.Choice(["ultra-fast", "fast", "basic", "advanced"]), default=None, help="Search depth (default: basic).")
+@click.option(
+    "--depth",
+    "search_depth",
+    type=click.Choice(["ultra-fast", "fast", "basic", "advanced"]),
+    default=None,
+    help="Search depth (default: basic).",
+)
 @click.option("--max-results", type=int, default=None, help="Maximum results, 0-20 (default: 5).")
 @click.option("--topic", type=click.Choice(["general", "news", "finance"]), default=None, help="Search topic.")
-@click.option("--time-range", type=click.Choice(["day", "week", "month", "year"]), default=None, help="Relative time filter.")
+@click.option(
+    "--time-range", type=click.Choice(["day", "week", "month", "year"]), default=None, help="Relative time filter."
+)
 @click.option("--start-date", default=None, help="Results after date (YYYY-MM-DD).")
 @click.option("--end-date", default=None, help="Results before date (YYYY-MM-DD).")
 @click.option("--include-domains", default=None, help="Comma-separated domains to include.")
 @click.option("--exclude-domains", default=None, help="Comma-separated domains to exclude.")
 @click.option("--country", default=None, help="Boost results from country.")
-@click.option("--include-answer", is_flag=False, flag_value="basic", default=None, help="Include AI answer (pass 'basic' or 'advanced').")
-@click.option("--include-raw-content", is_flag=False, flag_value="markdown", default=None, help="Include full page content ('markdown' or 'text').")
+@click.option(
+    "--include-answer",
+    is_flag=False,
+    flag_value="basic",
+    default=None,
+    help="Include AI answer (pass 'basic' or 'advanced').",
+)
+@click.option(
+    "--include-raw-content",
+    is_flag=False,
+    flag_value="markdown",
+    default=None,
+    help="Include full page content ('markdown' or 'text').",
+)
 @click.option("--include-images", is_flag=True, default=False, help="Include image results.")
 @click.option("--include-image-descriptions", is_flag=True, default=False, help="Include AI image descriptions.")
 @click.option("--chunks-per-source", type=int, default=None, help="Chunks per source (advanced/fast depth only).")
@@ -31,7 +51,19 @@ from tavily_cli.common import handle_api_error, json_option
     "filter_instruction",
     default=None,
     metavar="INSTRUCTION",
-    help="Run dynamic filtering in Docker; INSTRUCTION says what to extract or focus on.",
+    help="Run dynamic filtering in Docker sandbox; INSTRUCTION says what to extract or focus on.",
+)
+@click.option(
+    "--filter-model",
+    default=None,
+    metavar="MODEL",
+    help="LLM model for the filter agent (default: anthropic:claude-sonnet-4-20250514 or FILTER_MODEL env).",
+)
+@click.option(
+    "--filter-verbose",
+    is_flag=True,
+    default=False,
+    help="Show debug logs from the filter agent.",
 )
 @json_option
 def search(
@@ -52,16 +84,22 @@ def search(
     chunks_per_source: int | None,
     output_file: str | None,
     filter_instruction: str | None,
+    filter_model: str | None,
+    filter_verbose: bool,
     json_output: bool,
 ) -> None:
     """Search the web using Tavily.
 
     QUERY is the search query. Use "-" to read from stdin.
 
-    With --filter INSTRUCTION, the query is sent to a filter agent inside a
-    Docker container. The agent uses Tavily search, extract, and a shell to
-    fetch raw content, filter it per INSTRUCTION, and return only relevant
-    signal (raw page text never enters the LLM context).
+    With --filter INSTRUCTION, the query is sent to a filter agent running in a
+    Docker sandbox. The agent uses Tavily search/extract and a Python shell to
+    fetch raw content, filter it programmatically per INSTRUCTION, and return
+    only the relevant signal. Raw page content never enters the LLM context.
+
+    Requires Docker. Build the sandbox image first:
+
+        docker build -t tvly-filter-sandbox sandbox/
     """
     if query == "-":
         query = sys.stdin.read(100_000).strip()
@@ -76,6 +114,8 @@ def search(
         _run_filter(
             query,
             instructions=instr,
+            model=filter_model,
+            verbose=filter_verbose,
             json_output=json_output,
             output_file=output_file,
         )
@@ -128,13 +168,15 @@ def search(
     print_search_results(response, json_mode=json_output, output_file=output_file)
 
 
-_FILTER_TIMEOUT_S = 120
+_FILTER_TIMEOUT_S = 300
 
 
 def _run_filter(
     query: str,
     *,
     instructions: str,
+    model: str | None,
+    verbose: bool,
     json_output: bool,
     output_file: str | None,
 ) -> None:
@@ -143,26 +185,27 @@ def _run_filter(
     import subprocess
 
     from tavily_cli.output import console, emit
-    from tavily_cli.theme import ACCENT, err_console, spinner
+    from tavily_cli.theme import ACCENT, err_console
 
     try:
         from tavily_cli.sandbox import run_filter_sandbox
 
-        with spinner("Running filter agent in sandbox...", json_mode=json_output):
-            output = run_filter_sandbox(
-                query,
-                instructions=instructions,
-                timeout=_FILTER_TIMEOUT_S,
-            )
+        # Don't show spinner if verbose — logs will stream to stderr instead
+        if not verbose and not json_output:
+            err_console.print(f"  [{ACCENT}]Running filter agent in sandbox...[/{ACCENT}]")
+
+        output = run_filter_sandbox(
+            query,
+            instructions=instructions,
+            model=model,
+            verbose=verbose,
+            timeout=_FILTER_TIMEOUT_S,
+        )
     except subprocess.TimeoutExpired:
         if json_output:
-            click.echo(
-                json_mod.dumps({"error": f"Filter agent timed out after {_FILTER_TIMEOUT_S}s"})
-            )
+            click.echo(json_mod.dumps({"error": f"Filter agent timed out after {_FILTER_TIMEOUT_S}s"}))
         else:
-            err_console.print(
-                f"  [#FAA2FB]> Error:[/#FAA2FB] Filter agent timed out after {_FILTER_TIMEOUT_S}s"
-            )
+            err_console.print(f"  [#FAA2FB]> Error:[/#FAA2FB] Filter agent timed out after {_FILTER_TIMEOUT_S}s")
         raise SystemExit(4)
     except Exception as e:
         if json_output:
@@ -172,8 +215,11 @@ def _run_filter(
         raise SystemExit(4)
 
     if json_output:
-        data = {"query": query, "filtered_output": output}
-        data["filter_instructions"] = instructions
+        data = {
+            "query": query,
+            "filter_instructions": instructions,
+            "filtered_output": output,
+        }
         emit(data, json_mode=True, output_file=output_file, pretty=True)
     elif output_file:
         with open(output_file, "w", encoding="utf-8") as f:

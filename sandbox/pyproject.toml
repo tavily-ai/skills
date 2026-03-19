@@ -1,0 +1,39 @@
+[project]
+name = "tvly-sandbox"
+version = "0.1.0"
+description = "Sandboxed filter agent for Tavily CLI — Docker image that searches, extracts, and programmatically filters web content via an LLM agent."
+requires-python = ">=3.11"
+license = "MIT"
+
+dependencies = [
+    # Tavily API
+    "tavily-python>=0.7.0",
+
+    # LLM agent framework
+    "langchain>=1.2",
+    "langchain-anthropic>=1.4",
+    "langchain-openai>=1.1",
+
+    # Content parsing (used by agent-written scripts inside the sandbox)
+    "beautifulsoup4>=4.12",
+    "lxml>=5.0",
+    "httpx>=0.27",
+]
+
+[project.scripts]
+tvly-filter = "tvly_sandbox.filter_agent:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tvly_sandbox"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP"]
+ignore = ["E501"]

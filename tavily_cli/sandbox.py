@@ -1,21 +1,24 @@
 """Sandbox runner — launches the filter agent inside a Docker container.
 
 The CLI calls `run_filter_sandbox(query, ...)` which:
-1. Ensures the Docker image exists (builds if needed)
+1. Ensures Docker is available and the image exists (auto-builds if needed)
 2. Runs `docker run --rm` with the query + env vars
-3. Captures and returns stdout (the filtered output)
+3. Captures stdout (filtered output) and streams stderr (agent logs)
 """
 
 from __future__ import annotations
 
+import logging
 import os
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 
+_log = logging.getLogger("tvly.sandbox")
+
 IMAGE_NAME = "tvly-filter-sandbox"
-DOCKERFILE = "Dockerfile.filter"
+SANDBOX_DIR = "sandbox"  # relative to repo root
 
 # Env vars to forward into the container
 _ENV_VARS = [
@@ -32,8 +35,10 @@ _ENV_VARS = [
 
 def _load_env() -> None:
     """Load .env file from the repo root into os.environ (no-op if missing)."""
-    from dotenv import load_dotenv
-
+    try:
+        from dotenv import load_dotenv
+    except ImportError:
+        return
     env_file = Path(__file__).resolve().parent.parent / ".env"
     load_dotenv(env_file, override=False)
 
@@ -46,6 +51,20 @@ def _docker_bin() -> str:
             "Docker is required for --filter but was not found on PATH.\n"
             "Install Docker: https://docs.docker.com/get-docker/"
         )
+
+    # Verify daemon is running
+    result = subprocess.run(
+        [docker, "info"],
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            "Docker daemon is not running.\n"
+            f"  stderr: {result.stderr.strip()[:200]}"
+        )
+
     return docker
 
 
@@ -59,71 +78,32 @@ def _image_exists(docker: str) -> bool:
 
 
 def _build_image(docker: str) -> None:
-    """Build the filter sandbox Docker image."""
-    # Find the Dockerfile relative to this package
-    pkg_dir = Path(__file__).resolve().parent.parent
-    dockerfile = pkg_dir / DOCKERFILE
+    """Build the filter sandbox Docker image from sandbox/."""
+    repo_root = Path(__file__).resolve().parent.parent
+    sandbox_dir = repo_root / SANDBOX_DIR
 
-    if not dockerfile.exists():
+    if not (sandbox_dir / "Dockerfile").exists():
         raise FileNotFoundError(
-            f"Dockerfile not found at {dockerfile}.\n"
-            f"Run from the skills repo root, or build manually:\n"
-            f"  docker build -t {IMAGE_NAME} -f Dockerfile.filter ."
+            f"Dockerfile not found at {sandbox_dir / 'Dockerfile'}.\n"
+            f"Build manually:  docker build -t {IMAGE_NAME} {SANDBOX_DIR}/"
         )
 
+    _log.info("Building filter sandbox image...")
     from tavily_cli.theme import AQUA, err_console
-    err_console.print(f"  [{AQUA}]Building filter sandbox image...[/{AQUA}]")
+    err_console.print(f"  [{AQUA}]Building filter sandbox image (first run only)...[/{AQUA}]")
 
     result = subprocess.run(
-        [docker, "build", "-t", IMAGE_NAME, "-f", str(dockerfile), str(pkg_dir)],
+        [docker, "build", "-t", IMAGE_NAME, str(sandbox_dir)],
         capture_output=True,
         text=True,
     )
     if result.returncode != 0:
         raise RuntimeError(
-            f"Failed to build Docker image:\n{result.stderr}"
+            f"Failed to build Docker image '{IMAGE_NAME}':\n{result.stderr[-500:]}"
         )
 
+    _log.info("Image built: %s", IMAGE_NAME)
     err_console.print(f"  [{AQUA}]Image built: {IMAGE_NAME}[/{AQUA}]")
-
-
-def _build_docker_cmd(
-    docker: str,
-    query: str,
-    *,
-    instructions: str | None = None,
-    model: str | None = None,
-    timeout: int = 120,
-) -> list[str]:
-    """Assemble the `docker run` command."""
-    cmd = [
-        docker, "run", "--rm",
-        "--network=host",  # agent needs outbound for LLM + Tavily API calls
-    ]
-
-    # Load .env into the process env, then forward known vars into the container
-    _load_env()
-    for var in _ENV_VARS:
-        val = os.environ.get(var)
-        if val:
-            cmd.extend(["-e", f"{var}={val}"])
-
-    # Resource limits
-    cmd.extend([
-        "--memory=512m",
-        "--cpus=1.0",
-    ])
-
-    cmd.append(IMAGE_NAME)
-
-    # Args to filter_agent.py (ENTRYPOINT)
-    cmd.append(query)
-    if instructions:
-        cmd.extend(["--instructions", instructions])
-    if model:
-        cmd.extend(["--model", model])
-
-    return cmd
 
 
 def run_filter_sandbox(
@@ -131,7 +111,8 @@ def run_filter_sandbox(
     *,
     instructions: str | None = None,
     model: str | None = None,
-    timeout: int = 120,
+    verbose: bool = False,
+    timeout: int = 300,
 ) -> str:
     """Run the filter agent inside Docker and return its output.
 
@@ -139,6 +120,7 @@ def run_filter_sandbox(
         query: The search/filter query.
         instructions: Optional additional filtering instructions.
         model: LLM model identifier override.
+        verbose: Forward --verbose to the agent (debug logging to stderr).
         timeout: Max seconds to wait for the container.
 
     Returns:
@@ -154,25 +136,55 @@ def run_filter_sandbox(
     if not _image_exists(docker):
         _build_image(docker)
 
-    cmd = _build_docker_cmd(
-        docker,
-        query,
-        instructions=instructions,
-        model=model,
-        timeout=timeout,
-    )
+    # Load .env for API keys
+    _load_env()
 
+    # Build docker run command
+    cmd: list[str] = [
+        docker, "run", "--rm",
+        "--network=host",  # agent needs outbound for LLM + Tavily API calls
+        "--memory=512m",
+        "--cpus=1.0",
+    ]
+
+    # Forward env vars into the container
+    for var in _ENV_VARS:
+        val = os.environ.get(var)
+        if val:
+            cmd.extend(["-e", f"{var}={val}"])
+
+    cmd.append(IMAGE_NAME)
+
+    # ENTRYPOINT args: tvly-filter "query" [--instructions ...] [--model ...] [--verbose]
+    cmd.append(query)
+    if instructions:
+        cmd.extend(["--instructions", instructions])
+    if model:
+        cmd.extend(["--model", model])
+    if verbose:
+        cmd.append("--verbose")
+
+    _log.info("Running filter agent in sandbox (timeout=%ds)", timeout)
+    _log.debug("Docker command: %s", " ".join(cmd[:8]) + " ...")
+
+    # Run with stderr streaming to our stderr (so user sees agent logs in real time)
     result = subprocess.run(
         cmd,
-        capture_output=True,
+        capture_output=False,
+        stdout=subprocess.PIPE,
+        stderr=sys.stderr,
         text=True,
         timeout=timeout,
     )
 
     if result.returncode != 0:
-        stderr = result.stderr.strip()
-        if stderr:
-            raise RuntimeError(f"Filter agent failed:\n{stderr}")
-        raise RuntimeError(f"Filter agent exited with code {result.returncode}")
+        raise RuntimeError(
+            f"Filter agent exited with code {result.returncode}"
+        )
 
-    return result.stdout.strip()
+    output = (result.stdout or "").strip()
+    if not output:
+        raise RuntimeError("Filter agent produced no output")
+
+    _log.info("Filter agent returned %d chars", len(output))
+    return output
