@@ -26,8 +26,13 @@ from tavily_cli.common import handle_api_error, json_option
 @click.option("--include-image-descriptions", is_flag=True, default=False, help="Include AI image descriptions.")
 @click.option("--chunks-per-source", type=int, default=None, help="Chunks per source (advanced/fast depth only).")
 @click.option("--output", "-o", "output_file", default=None, help="Save output to file.")
-@click.option("--filter", "filter_instructions", is_flag=False, flag_value="", default=None,
-              help="Request filtered results. Automatically fetches raw page content. Optionally pass instructions.")
+@click.option(
+    "--filter",
+    "filter_instruction",
+    default=None,
+    metavar="INSTRUCTION",
+    help="Run dynamic filtering in Docker; INSTRUCTION says what to extract or focus on.",
+)
 @json_option
 def search(
     query: str | None,
@@ -46,22 +51,39 @@ def search(
     include_image_descriptions: bool,
     chunks_per_source: int | None,
     output_file: str | None,
-    filter_instructions: str | None,
+    filter_instruction: str | None,
     json_output: bool,
 ) -> None:
     """Search the web using Tavily.
 
     QUERY is the search query. Use "-" to read from stdin.
-    """
-    from tavily_cli.config import get_client
-    from tavily_cli.output import print_search_results
 
+    With --filter INSTRUCTION, the query is sent to a filter agent inside a
+    Docker container. The agent uses Tavily search, extract, and a shell to
+    fetch raw content, filter it per INSTRUCTION, and return only relevant
+    signal (raw page text never enters the LLM context).
+    """
     if query == "-":
         query = sys.stdin.read(100_000).strip()
     if not query:
         raise click.UsageError("QUERY is required. Pass a query string or use '-' to read from stdin.")
 
-    filtering = filter_instructions is not None
+    # ── Filter mode: delegate entirely to the sandboxed agent ──
+    if filter_instruction is not None:
+        instr = filter_instruction.strip()
+        if not instr:
+            raise click.UsageError("--filter requires a non-empty instruction.")
+        _run_filter(
+            query,
+            instructions=instr,
+            json_output=json_output,
+            output_file=output_file,
+        )
+        return
+
+    # ── Normal search mode ──
+    from tavily_cli.config import get_client
+    from tavily_cli.output import print_search_results
 
     client = get_client()
 
@@ -70,8 +92,6 @@ def search(
         kwargs["search_depth"] = search_depth
     if max_results is not None:
         kwargs["max_results"] = max_results
-    elif filtering:
-        kwargs["max_results"] = 8
     if topic is not None:
         kwargs["topic"] = topic
     if time_range is not None:
@@ -90,8 +110,6 @@ def search(
         kwargs["include_answer"] = include_answer
     if include_raw_content is not None:
         kwargs["include_raw_content"] = include_raw_content
-    elif filtering:
-        kwargs["include_raw_content"] = "markdown"
     if include_images:
         kwargs["include_images"] = True
     if include_image_descriptions:
@@ -107,10 +125,65 @@ def search(
     except Exception as e:
         handle_api_error(e, json_output)
 
-    if filtering:
-        response["filtering"] = {
-            "requested": True,
-            "instructions": filter_instructions or None,
-        }
-
     print_search_results(response, json_mode=json_output, output_file=output_file)
+
+
+_FILTER_TIMEOUT_S = 120
+
+
+def _run_filter(
+    query: str,
+    *,
+    instructions: str,
+    json_output: bool,
+    output_file: str | None,
+) -> None:
+    """Delegate to the Docker-sandboxed filter agent."""
+    import json as json_mod
+    import subprocess
+
+    from tavily_cli.output import console, emit
+    from tavily_cli.theme import ACCENT, err_console, spinner
+
+    try:
+        from tavily_cli.sandbox import run_filter_sandbox
+
+        with spinner("Running filter agent in sandbox...", json_mode=json_output):
+            output = run_filter_sandbox(
+                query,
+                instructions=instructions,
+                timeout=_FILTER_TIMEOUT_S,
+            )
+    except subprocess.TimeoutExpired:
+        if json_output:
+            click.echo(
+                json_mod.dumps({"error": f"Filter agent timed out after {_FILTER_TIMEOUT_S}s"})
+            )
+        else:
+            err_console.print(
+                f"  [#FAA2FB]> Error:[/#FAA2FB] Filter agent timed out after {_FILTER_TIMEOUT_S}s"
+            )
+        raise SystemExit(4)
+    except Exception as e:
+        if json_output:
+            click.echo(json_mod.dumps({"error": str(e)}))
+        else:
+            err_console.print(f"  [#FAA2FB]> Error:[/#FAA2FB] {e}")
+        raise SystemExit(4)
+
+    if json_output:
+        data = {"query": query, "filtered_output": output}
+        data["filter_instructions"] = instructions
+        emit(data, json_mode=True, output_file=output_file, pretty=True)
+    elif output_file:
+        with open(output_file, "w", encoding="utf-8") as f:
+            f.write(output + "\n")
+        err_console.print(f"  Output saved to {output_file}")
+    else:
+        from rich.markdown import Markdown
+
+        console.print()
+        console.print(f"  [{ACCENT} bold]Filtered Results[/{ACCENT} bold]")
+        console.print()
+        console.print(Markdown(output), width=min(console.width, 100))
+        console.print()

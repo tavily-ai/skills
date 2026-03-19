@@ -43,6 +43,11 @@ Issues = "https://github.com/tavily-ai/skills/issues"
 tvly = "tavily_cli.cli:main"
 
 [project.optional-dependencies]
+filter = [
+    "langchain>=1.2.13",
+    "langchain-tavily>=0.2.17",
+    "python-dotenv>=1.0.0",
+]
 dev = [
     "pytest>=8.0.0",
     "ruff>=0.4.0",

@@ -1,0 +1,41 @@
+# Sandbox image for tvly search --filter
+#
+# The filter agent runs entirely inside this container:
+#   - LLM calls (via langchain + anthropic/openai SDKs)
+#   - Tavily search/extract (via tavily-python)
+#   - Code execution (bash/python on the container's own shell)
+#
+# Build:
+#   docker build -t tvly-filter-sandbox -f Dockerfile.filter .
+#
+# Run directly (for testing):
+#   docker run --rm \
+#     -e TAVILY_API_KEY -e ANTHROPIC_API_KEY \
+#     tvly-filter-sandbox \
+#     python /app/filter_agent.py "your query here"
+
+FROM python:3.12-slim
+
+# System deps for bs4/lxml parsing
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        gcc libxml2-dev libxslt1-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Python deps — pinned to what the agent needs
+RUN pip install --no-cache-dir \
+    "langchain>=1.2.0" \
+    "langchain-anthropic>=1.4.0" \
+    "langchain-openai>=1.1.0" \
+    "langgraph>=1.1.0" \
+    "tavily-python>=0.7.0" \
+    "beautifulsoup4>=4.12.0" \
+    "lxml>=5.0.0"
+
+# Copy the agent script
+COPY tavily_cli/filter_agent.py /app/filter_agent.py
+
+# Working directory for shell tool
+RUN mkdir -p /workspace
+WORKDIR /workspace
+
+ENTRYPOINT ["python", "/app/filter_agent.py"]
