@@ -139,4 +139,4 @@ def get_client():
         return McpTavilyClient(api_key=key)
     else:
         from tavily import TavilyClient
-        return TavilyClient(api_key=key)
+        return TavilyClient(api_key=key, client_source="tavily-cli")
