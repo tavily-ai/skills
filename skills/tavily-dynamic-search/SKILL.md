@@ -261,7 +261,7 @@ import json, subprocess
 raw = subprocess.check_output(
     ['tvly', 'search', 'NVIDIA Q4 2025 earnings revenue',
      '--include-raw-content', 'markdown', '--max-results', '5',
-     '--topic', 'finance', '--json'],
+     '--json'],
     stderr=subprocess.DEVNULL
 )
 data = json.loads(raw)
@@ -442,7 +442,6 @@ All standard `tvly search` options work:
 |--------|-------------|
 | `--max-results` | Number of results (default: 5, max: 20) |
 | `--depth` | `ultra-fast`, `fast`, `basic` (default), `advanced` |
-| `--topic` | `general` (default), `news`, `finance` |
 | `--time-range` | `day`, `week`, `month`, `year` |
 | `--include-domains` | Comma-separated whitelist |
 | `--exclude-domains` | Comma-separated blacklist |
