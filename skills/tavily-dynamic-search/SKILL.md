@@ -15,11 +15,9 @@ A typical `tvly search --include-raw-content` returns 8 results × 30-50K chars 
 
 ## Background: Programmatic Tool Calling (PTC)
 
-This skill replicates the architecture of [Anthropic's Programmatic Tool Calling](https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling) (PTC) for web search. PTC lets the model write code that orchestrates tool calls inside a sandbox — intermediate results stay in the sandbox, and only the final `print()` output reaches the model's context window. This improved accuracy by 11% while using 24% fewer input tokens on search benchmarks.
+This skill replicates the architecture of [Anthropic's Programmatic Tool Calling](https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling) (PTC) for web search. PTC lets the model write code that orchestrates tool calls inside a sandbox — intermediate results stay in the sandbox, and only the final `print()` output reaches the model's context window.
 
 **This skill applies the same principle using local Python execution.** The Python process is the sandbox. Variables in memory hold the raw data. Only what you `print()` crosses into your context window. You write the filtering logic — you decide what matters for each query.
-
-See [references/ptc.md](references/ptc.md) for the full PTC architecture, API response traces, and source material.
 
 ## Before running any command
 
