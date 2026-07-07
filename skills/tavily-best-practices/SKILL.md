@@ -132,6 +132,27 @@ Key parameters: `input`, `model` ("mini"/"pro"/"auto"), `stream`, `output_schema
 
 See **[references/research.md](references/research.md)** for complete research reference.
 
+## Security Considerations
+
+Tavily surfaces real-time web content inside an agent's context window. Pages can contain adversarial text designed to override agent instructions (prompt injection). For autonomous agents, the blast radius of a successful injection is significantly higher than for stateless QA pipelines.
+
+**Quick mitigations:**
+
+```python
+# Restrict to vetted domains whenever the task allows it
+response = client.search(
+    query=query,
+    include_domains=["reuters.com", "sec.gov", "docs.example.com"]
+)
+```
+
+- Use `include_domains` to restrict queries to trusted sources
+- Validate result content before it enters the agent context
+- Log queries and result URLs for auditing
+- Apply least-privilege: give the agent no write tools unless strictly needed
+
+See **[references/security.md](references/security.md)** for domain filtering patterns, content validation, audit logging, and background on adversarial agents.
+
 ## Detailed Guides
 
 For complete parameters, response fields, patterns, and examples:
@@ -142,3 +163,4 @@ For complete parameters, response fields, patterns, and examples:
 - **[references/crawl.md](references/crawl.md)** - Crawl vs Map, instructions for semantic focus, use cases, Map-then-Extract pattern
 - **[references/research.md](references/research.md)** - Prompting best practices, model selection, streaming, structured output schemas
 - **[references/integrations.md](references/integrations.md)** - LangChain, LlamaIndex, CrewAI, Vercel AI SDK, and framework integrations
+- **[references/security.md](references/security.md)** - Prompt injection, domain allowlisting, content validation, audit logging, least-privilege patterns
