@@ -46,6 +46,11 @@ Get an API key at [tavily.com](https://tavily.com).
 | **[tavily-research](skills/tavily-research/SKILL.md)** | Comprehensive AI-powered research with citations. Multi-source synthesis in 30-120s. |
 | **[tavily-cli](skills/tavily-cli/SKILL.md)** | Overview skill with workflow guide, install/auth instructions. |
 | **[tavily-best-practices](skills/tavily-best-practices/SKILL.md)** | Reference docs for building production-ready Tavily integrations. |
+| **[tavily-enrich](skills/tavily-enrich/SKILL.md)** | Fill in missing fields (CEO, funding, contact info, etc.) on a list of companies, people, or products from the web. |
+| **[tavily-findall](skills/tavily-findall/SKILL.md)** | Build a structured, deduplicated list of entities matching a description, instead of a pile of search results. |
+| **[tavily-monitor](skills/tavily-monitor/SKILL.md)** | Watch a page or site on a recurring schedule and get notified only when something changes. |
+| **[tavily-runs](skills/tavily-runs/SKILL.md)** | Look up a past research run by topic instead of by its request ID. |
+| **[migrate-to-tavily](skills/migrate-to-tavily/SKILL.md)** | Migrate an existing Exa, Firecrawl, Perplexity, or Parallel integration over to Tavily. |
 
 ## Workflow
 
