@@ -1,5 +1,7 @@
 # tavily-monitor — Explanation
 
+Skill definition: [SKILL.md](SKILL.md)
+
 ## Use Case
 
 You want to keep an eye on a page, a company, or a topic — a competitor's pricing page, a regulatory filing tracker, a product's changelog — and get told only when something actually changes, instead of checking it yourself every day.

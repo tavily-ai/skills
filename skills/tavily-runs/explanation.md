@@ -1,5 +1,7 @@
 # tavily-runs — Explanation
 
+Skill definition: [SKILL.md](SKILL.md)
+
 ## Use Case
 
 You kicked off a big research task last week, or a few days ago, and you don't remember the run ID — you just remember roughly what you asked. This lets you find and re-open it by topic instead of by ID.

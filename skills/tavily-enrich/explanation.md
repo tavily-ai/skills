@@ -1,5 +1,7 @@
 # tavily-enrich — Explanation
 
+Skill definition: [SKILL.md](SKILL.md)
+
 ## Use Case
 
 You have a list of companies, people, or products — maybe just names, maybe a half-finished spreadsheet — and you want Tavily to go find the missing details (CEO, funding raised, headquarters, employee count, contact info, whatever you specify) and hand you back a completed file.

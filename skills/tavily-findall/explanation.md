@@ -1,5 +1,7 @@
 # tavily-findall — Explanation
 
+Skill definition: [SKILL.md](SKILL.md)
+
 ## Use Case
 
 You don't have a starting list — you want Tavily to build one. "Find every AI startup that raised a Series A in 2026." "List every state that passed a data-privacy law this year." You want a clean table back, not ten browser tabs you have to read yourself.

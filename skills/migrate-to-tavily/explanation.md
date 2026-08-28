@@ -1,5 +1,7 @@
 # migrate-to-tavily — Explanation
 
+Skill definition: [SKILL.md](SKILL.md)
+
 ## Use Case
 
 You've already got working code that calls a competitor's search/extract/research API, and you want to swap it for Tavily without re-architecting anything or breaking what already works.
