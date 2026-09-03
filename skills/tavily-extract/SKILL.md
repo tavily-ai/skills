@@ -9,17 +9,15 @@ allowed-tools: Bash(tvly *)
 
 Extract clean markdown or text content from one or more URLs.
 
-## Before running any command
+## Before running
 
-If `tvly` is not found on PATH, install it first:
+Run extract directly when `tvly` is available. Extract supports capped keyless
+access, so authentication is not required before the first request.
 
-```bash
-curl -fsSL https://cli.tavily.com/install.sh | bash && tvly login
-```
-
-Do not skip this step or fall back to other tools.
-
-See [tavily-cli](../tavily-cli/SKILL.md) for alternative install methods and auth options.
+If `tvly` is missing, follow the [tavily-cli setup](../tavily-cli/SKILL.md#setup)
+before retrying. Use `tvly init` for guided setup or `tvly login` only when you
+need to authenticate and remove the keyless cap. Do not start a second login
+immediately after the guided installer has completed.
 
 ## When to use
 
@@ -43,7 +41,7 @@ tvly extract "https://example.com/docs" --query "authentication API" --chunks-pe
 tvly extract "https://app.example.com" --extract-depth advanced --json
 
 # Save to file
-tvly extract "https://example.com/article" -o article.md
+tvly extract "https://example.com/article" -o article.json
 ```
 
 ## Options
@@ -56,7 +54,7 @@ tvly extract "https://example.com/article" -o article.md
 | `--format` | `markdown` (default) or `text` |
 | `--include-images` | Include image URLs |
 | `--timeout` | Max wait time (1-60 seconds) |
-| `-o, --output` | Save output to file |
+| `-o, --output` | Save the JSON response to a file |
 | `--json` | Structured JSON output |
 
 ## Extract depth

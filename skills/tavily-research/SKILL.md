@@ -9,17 +9,16 @@ allowed-tools: Bash(tvly *)
 
 AI-powered deep research that gathers sources, analyzes them, and produces a cited report. Takes 30-120 seconds.
 
-## Before running any command
+## Before running
 
-If `tvly` is not found on PATH, install it first:
+Research requires authentication. Run the requested command directly when
+`tvly` is already authenticated; do not add a status check to every invocation.
 
-```bash
-curl -fsSL https://cli.tavily.com/install.sh | bash && tvly login
-```
-
-Do not skip this step or fall back to other tools.
-
-See [tavily-cli](../tavily-cli/SKILL.md) for alternative install methods and auth options.
+If `tvly` is missing, follow the [tavily-cli setup](../tavily-cli/SKILL.md#setup).
+If an installed CLI reports an authentication error, use `tvly login` for
+authentication only, or `tvly init --skip-skills` when guided verification is
+also useful. Use `--no-browser` for headless or SSH sessions. Do not start a
+second login immediately after the guided installer has completed.
 
 ## When to use
 
@@ -41,7 +40,7 @@ tvly research "electric vehicle market analysis" --model pro
 tvly research "AI agent frameworks comparison" --stream
 
 # Save report to file
-tvly research "fintech trends 2025" --model pro -o fintech-report.md
+tvly research "fintech trends 2025" --model pro -o fintech-report.json
 
 # JSON output for agents
 tvly research "quantum computing breakthroughs" --json
@@ -58,7 +57,7 @@ tvly research "quantum computing breakthroughs" --json
 | `--citation-format` | `numbered`, `mla`, `apa`, `chicago` |
 | `--poll-interval` | Seconds between checks (default: 10) |
 | `--timeout` | Max wait seconds (default: 600) |
-| `-o, --output` | Save output to file |
+| `-o, --output` | Save the JSON response to a file |
 | `--json` | Structured JSON output |
 
 ## Model selection

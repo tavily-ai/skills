@@ -1,8 +1,7 @@
 ---
 name: tavily-cli
 description: |
-  Web search, content extraction, crawling, and deep research via the Tavily CLI. Use this skill whenever the user wants to search the web, find articles, research a topic, look something up online, extract content from a URL, grab text from a webpage, crawl documentation, download a site's pages, discover URLs on a domain, or conduct in-depth research with citations. Also use when they say "fetch this page", "pull the content from", "get the page at https://", "find me articles about", or reference extracting data from external websites. This provides LLM-optimized web search, content extraction, site crawling, URL discovery, and AI-powered deep research — capabilities beyond what agents can do natively. Do NOT trigger for local file operations, git commands, deployments, or code editing tasks.
-compatibility: Requires tavily-cli (`curl -fsSL https://cli.tavily.com/install.sh | bash`) and a Tavily API key from tavily.com.
+  Set up, authenticate, update, troubleshoot, or choose between Tavily CLI web commands. Use when the user asks about the Tavily CLI, installing Tavily skills, first-time setup, authentication, keyless limits, CLI updates, or which Tavily command to use. For an ordinary web task, use the specific search, extract, map, crawl, research, or dynamic-search skill instead.
 allowed-tools: Bash(tvly *)
 ---
 
@@ -10,19 +9,14 @@ allowed-tools: Bash(tvly *)
 
 Web search, content extraction, site crawling, URL discovery, and deep research. Returns JSON optimized for LLM consumption.
 
+Requires `tavily-cli`. Search and extract support capped keyless access; map,
+crawl, and research require authentication.
+
 Run `tvly --help` or `tvly <command> --help` for full option details.
 
-## Prerequisites
+## Setup
 
-Must be installed and authenticated. Check with `tvly --status`.
-
-```bash
-tavily v0.1.0
-
-> Authenticated via OAuth (tvly login)
-```
-
-If not ready:
+If `tvly` is not installed:
 
 ```bash
 curl -fsSL https://cli.tavily.com/install.sh | bash
@@ -30,13 +24,31 @@ curl -fsSL https://cli.tavily.com/install.sh | bash
 
 Or manually: `uv tool install tavily-cli` / `pip install tavily-cli`
 
-Then authenticate:
+On a fresh interactive desktop install, the installer starts guided setup
+automatically. Otherwise run:
 
 ```bash
-tvly login --api-key tvly-YOUR_KEY
-# or: export TAVILY_API_KEY=tvly-YOUR_KEY
-# or: tvly login  (opens browser for OAuth)
+tvly init
+
+# Headless or SSH sessions
+tvly init --no-browser
 ```
+
+`tvly init` reuses an existing credential, installs or updates the Tavily
+skills bundled with that CLI release, and verifies a live search. Run `tvly
+update` first when refreshing bundled skills. Use `tvly init --skip-auth` to
+keep keyless mode, or `tvly init --skip-skills` when the skills are already
+installed and only authentication or verification is needed.
+
+Search and extract can run immediately without authentication, subject to a
+keyless rate-limit cap. Map, crawl, and research require authentication. Check
+the current state only when needed with `tvly --status --json`.
+
+For authentication without full setup, use `tvly login`, `tvly login
+--no-browser`, `tvly login --api-key tvly-YOUR_KEY`, or `TAVILY_API_KEY`.
+
+Keep an existing installation current with `tvly update --check` and `tvly
+update`.
 
 ## Workflow
 
@@ -58,19 +70,25 @@ Follow this escalation pattern — start simple, escalate when needed:
 
 For detailed command reference, use the individual skill for each command (e.g., `tavily-search`, `tavily-crawl`) or run `tvly <command> --help`.
 
+Run `tvly` without a subcommand for the interactive REPL.
+
 ## Output
 
-All commands support `--json` for structured, machine-readable output and `-o` to save to a file.
+Search, extract, crawl, map, and research support `--json` for structured output.
+Result-producing commands support `-o` to save the JSON response; crawl also
+supports `--output-dir` for one Markdown file per page. Setup, authentication,
+status, and update commands expose `--json` where documented but do not support
+`-o`.
 
 ```bash
 tvly search "react hooks" --json -o results.json
-tvly extract "https://example.com/docs" -o docs.md
+tvly extract "https://example.com/docs" -o docs.json
 tvly crawl "https://docs.example.com" --output-dir ./docs/
 ```
 
 ## Tips
 
 - **Always quote URLs** — shell interprets `?` and `&` as special characters.
-- **Use `--json` for agentic workflows** — every command supports it.
+- **Use `--json` for agentic workflows** when the selected command exposes it.
 - **Read from stdin with `-`** — `echo "query" | tvly search -`
-- **Exit codes**: 0 = success, 2 = bad input, 3 = auth error, 4 = API error.
+- **Exit codes**: 0 = success, 1 = setup/update failure, 2 = bad input, 3 = auth error, 4 = API or live-verification error.
