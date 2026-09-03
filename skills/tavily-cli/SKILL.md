@@ -24,8 +24,19 @@ curl -fsSL https://cli.tavily.com/install.sh | bash
 
 Or manually: `uv tool install tavily-cli` / `pip install tavily-cli`
 
-On a fresh interactive desktop install, the installer starts guided setup
-automatically. Otherwise run:
+For agent setup, start keyless unless the user asks to sign in or the requested
+task needs map, crawl, or research. If the installer did not already complete
+setup, run:
+
+```bash
+tvly init --skip-auth
+```
+
+This installs or updates the Tavily skills and verifies a live keyless search.
+Do not look for an API key or authenticate before the first search or extract
+request.
+
+When authentication is requested or required, use guided setup:
 
 ```bash
 tvly init
@@ -36,13 +47,17 @@ tvly init --no-browser
 
 `tvly init` reuses an existing credential, installs or updates the Tavily
 skills bundled with that CLI release, and verifies a live search. Run `tvly
-update` first when refreshing bundled skills. Use `tvly init --skip-auth` to
-keep keyless mode, or `tvly init --skip-skills` when the skills are already
-installed and only authentication or verification is needed.
+update` first when refreshing bundled skills. Use `tvly init --skip-skills`
+when the skills are already installed and only authentication or verification
+is needed.
 
 Search and extract can run immediately without authentication, subject to a
-keyless rate-limit cap. Map, crawl, and research require authentication. Check
-the current state only when needed with `tvly --status --json`.
+keyless rate-limit cap. If either command reaches that cap in an interactive
+session, run `tvly login` to open browser OAuth, then retry the original command
+once. In an unattended environment, report the cap and authentication options
+instead of starting an interactive flow. Map, crawl, and research require
+authentication. Check the current state only when needed with `tvly --status
+--json`.
 
 For authentication without full setup, use `tvly login`, `tvly login
 --no-browser`, `tvly login --api-key tvly-YOUR_KEY`, or `TAVILY_API_KEY`.

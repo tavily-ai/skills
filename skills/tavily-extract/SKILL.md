@@ -12,12 +12,14 @@ Extract clean markdown or text content from one or more URLs.
 ## Before running
 
 Run extract directly when `tvly` is available. Extract supports capped keyless
-access, so authentication is not required before the first request.
+access, so do not look for an API key or authenticate before the first request.
 
 If `tvly` is missing, follow the [tavily-cli setup](../tavily-cli/SKILL.md#setup)
-before retrying. Use `tvly init` for guided setup or `tvly login` only when you
-need to authenticate and remove the keyless cap. Do not start a second login
-immediately after the guided installer has completed.
+before retrying. If the keyless cap is reached in an interactive session, run
+`tvly login` to open browser OAuth, then retry the original extraction once. In
+an unattended environment, report the cap and authentication options instead
+of starting an interactive flow. Do not start a second login immediately after
+guided setup has completed.
 
 ## When to use
 

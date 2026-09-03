@@ -16,8 +16,11 @@ simple lookup that a normal `tvly search --json` can answer directly.
 
 Search and extract support capped keyless access. Run them directly when `tvly`
 is available. If `tvly` is missing, follow the
-[tavily-cli setup](../tavily-cli/SKILL.md#setup). Authenticate only when the
-keyless cap is reached or the requested operation requires it.
+[tavily-cli setup](../tavily-cli/SKILL.md#setup). Do not look for an API key or
+authenticate before the first request. If the keyless cap is reached in an
+interactive session, run `tvly login` to open browser OAuth, then retry the
+blocked request once. In an unattended environment, report the cap and
+authentication options instead of starting an interactive flow.
 
 ## Workflow
 
