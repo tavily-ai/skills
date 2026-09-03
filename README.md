@@ -18,7 +18,7 @@ automatically. Otherwise run it after installation:
 ```bash
 tvly init
 
-# Headless or SSH sessions
+# Suppress browser launch when you can complete the printed OAuth flow
 tvly init --no-browser
 ```
 
@@ -30,6 +30,11 @@ run `tvly update` before `tvly init` when refreshing them.
 `tvly search` and `tvly extract` also work without authentication, subject to
 a keyless rate-limit cap. Use `tvly init --skip-auth` to keep keyless mode while
 installing the skills. `map`, `crawl`, and `research` require authentication.
+
+`--no-browser` still waits for an OAuth redirect to this machine's localhost
+callback. In non-interactive agents or CI where that callback cannot complete,
+authenticate out of band or provide `TAVILY_API_KEY` securely instead of
+starting a browser login that will wait indefinitely.
 
 ### Manual skill installation
 

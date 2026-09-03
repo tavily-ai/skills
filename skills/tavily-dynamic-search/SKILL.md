@@ -28,9 +28,20 @@ keyless cap is reached or the requested operation requires it.
    printing anything to the model context.
 4. Preserve source URLs beside every extracted fact.
 
+When the user restricts evidence to official or named domains, validate the
+hostname of every selected URL during local filtering. `--include-domains`
+narrows the search but is not proof that every returned result belongs to an
+allowed host. If full-page extraction is unavailable, label conclusions as
+search-snippet evidence instead of implying that the page body was verified.
+
 Keep the process in one turn when the relevant sources and filters are already
 known. Use another turn only when the first search changes what should be
 extracted.
+
+Create a unique temporary task directory before saving evidence so concurrent
+agents do not overwrite one another. Python's `tempfile.mkdtemp()` is available
+when `mktemp` is not permitted. Reuse that directory for all raw and filtered
+artifacts from the task.
 
 ## Small result: filter a direct JSON response
 
@@ -136,8 +147,8 @@ Treat fields as optional and use `.get()` while filtering. Inspect
 | `--max-results` | Bound the search result count; default 5, maximum 20 |
 | `--depth` | Choose `ultra-fast`, `fast`, `basic`, or `advanced` |
 | `--time-range` | Restrict results to `day`, `week`, `month`, or `year` |
-| `--include-domains` | Restrict results to trusted domains |
-| `--exclude-domains` | Exclude unwanted domains |
+| `--include-domains` | Restrict results to a comma-separated list of trusted domains |
+| `--exclude-domains` | Exclude a comma-separated list of domains |
 | `--include-raw-content` | Include full content as `markdown` or `text` |
 | `-o, --output` | Save the complete response to a file |
 

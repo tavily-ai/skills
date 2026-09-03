@@ -17,8 +17,11 @@ Research requires authentication. Run the requested command directly when
 If `tvly` is missing, follow the [tavily-cli setup](../tavily-cli/SKILL.md#setup).
 If an installed CLI reports an authentication error, use `tvly login` for
 authentication only, or `tvly init --skip-skills` when guided verification is
-also useful. Use `--no-browser` for headless or SSH sessions. Do not start a
-second login immediately after the guided installer has completed.
+also useful. `--no-browser` still waits for a localhost OAuth callback. In a
+non-interactive agent or CI environment where that callback cannot complete,
+do not start browser login; report the blocker and ask the user to authenticate
+out of band or provide `TAVILY_API_KEY` securely. Do not start a second login
+immediately after the guided installer has completed.
 
 ## When to use
 

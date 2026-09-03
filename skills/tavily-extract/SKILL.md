@@ -70,6 +70,10 @@ tvly extract "https://example.com/article" -o article.json
 - **Use `--query` + `--chunks-per-source`** to get only relevant content instead of full pages.
 - **Try `basic` first**, fall back to `advanced` if content is missing.
 - **Set `--timeout`** for slow pages (up to 60s).
+- **Inspect `failed_results` even after exit code 0.** A successful request can
+  still return no extracted pages. Retry the affected URL with `advanced` when
+  appropriate, otherwise report the per-URL failure instead of treating the
+  request as complete.
 - If search results already contain the content you need (via `--include-raw-content`), skip the extract step.
 
 ## See also

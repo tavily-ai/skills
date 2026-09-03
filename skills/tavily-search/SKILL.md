@@ -81,6 +81,10 @@ tvly search "react hooks tutorial" --include-raw-content --max-results 3 --json
 - **Use `--include-raw-content`** when you need full page text (saves a separate extract call).
 - **Use `--include-domains`** to focus on trusted sources.
 - **Use `--time-range`** for recent information.
+- **Verify identity-sensitive facts at the exact primary source.** For releases,
+  versions, ownership, or similarly named projects, confirm the official
+  repository or domain instead of trusting a generated answer or package-name
+  match alone.
 - Read from stdin: `echo "query" | tvly search - --json`
 
 ## See also
