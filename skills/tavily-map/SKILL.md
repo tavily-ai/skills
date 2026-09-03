@@ -17,11 +17,11 @@ is already authenticated; do not add a status check to every invocation.
 If `tvly` is missing, follow the [tavily-cli setup](../tavily-cli/SKILL.md#setup).
 If an installed CLI reports an authentication error, use `tvly login` for
 authentication only, or `tvly init --skip-skills` when guided verification is
-also useful. `--no-browser` still waits for a localhost OAuth callback. In a
-non-interactive agent or CI environment where that callback cannot complete,
-do not start browser login; report the blocker and ask the user to authenticate
-out of band or provide `TAVILY_API_KEY` securely. Do not start a second login
-immediately after the guided installer has completed.
+also useful. Browser-based OAuth is preferred when an interactive user can
+complete it. `--no-browser` prints the sign-in link instead of opening it, but
+still waits for a localhost callback. In an unattended agent or CI environment,
+leave authentication to the user or use a securely provided `TAVILY_API_KEY`.
+Do not start a second login immediately after guided setup has completed.
 
 ## When to use
 

@@ -30,7 +30,7 @@ automatically. Otherwise run:
 ```bash
 tvly init
 
-# Suppress browser launch when you can complete the printed OAuth flow
+# Prefer to open the sign-in link yourself
 tvly init --no-browser
 ```
 
@@ -47,13 +47,13 @@ the current state only when needed with `tvly --status --json`.
 For authentication without full setup, use `tvly login`, `tvly login
 --no-browser`, `tvly login --api-key tvly-YOUR_KEY`, or `TAVILY_API_KEY`.
 
-`--no-browser` still waits for an OAuth redirect to this machine's localhost
-callback. Use it only when a human can open the printed URL and that callback
-can reach the current machine (SSH may require port forwarding). In a
-non-interactive agent or CI environment without a reachable callback, do not
-start browser login. Report the authentication blocker and ask the user to
-authenticate out of band or provide `TAVILY_API_KEY` securely, then resume the
-original command.
+Browser-based OAuth is the preferred interactive sign-in method. `--no-browser`
+simply prints the sign-in link instead of opening it automatically; the flow
+still returns to a localhost callback on the machine running `tvly`. In remote
+sessions, make sure that callback is reachable (SSH may require port
+forwarding). In an unattended agent or CI environment, leave authentication to
+the user or use a securely provided `TAVILY_API_KEY`, then resume the original
+command.
 
 Keep an existing installation current with `tvly update --check` and `tvly
 update`.
