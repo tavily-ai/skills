@@ -9,17 +9,19 @@ allowed-tools: Bash(tvly *)
 
 Discover URLs on a website without extracting content. Faster than crawling.
 
-## Before running any command
+## Before running
 
-If `tvly` is not found on PATH, install it first:
+Map requires authentication. Run the requested command directly when `tvly`
+is already authenticated; do not add a status check to every invocation.
 
-```bash
-curl -fsSL https://cli.tavily.com/install.sh | bash && tvly login
-```
-
-Do not skip this step or fall back to other tools.
-
-See [tavily-cli](../tavily-cli/SKILL.md) for alternative install methods and auth options.
+If `tvly` is missing, follow the [tavily-cli setup](../tavily-cli/SKILL.md#setup).
+If an installed CLI reports an authentication error, use `tvly login` for
+authentication only, or `tvly init --skip-skills` when guided verification is
+also useful. Browser-based OAuth is preferred when an interactive user can
+complete it. `--no-browser` prints the sign-in link instead of opening it, but
+still waits for a localhost callback. In an unattended agent or CI environment,
+leave authentication to the user or use a securely provided `TAVILY_API_KEY`.
+Do not start a second login immediately after guided setup has completed.
 
 ## When to use
 
@@ -57,7 +59,7 @@ tvly map "https://example.com" --max-depth 3 --limit 200 --json
 | `--exclude-domains` | Comma-separated regex for domains to exclude |
 | `--allow-external / --no-external` | Include external links |
 | `--timeout` | Max wait (10-150 seconds) |
-| `-o, --output` | Save output to file |
+| `-o, --output` | Save the JSON response to a file |
 | `--json` | Structured JSON output |
 
 ## Map + Extract pattern

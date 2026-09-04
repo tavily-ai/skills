@@ -9,17 +9,17 @@ allowed-tools: Bash(tvly *)
 
 Extract clean markdown or text content from one or more URLs.
 
-## Before running any command
+## Before running
 
-If `tvly` is not found on PATH, install it first:
+Run extract directly when `tvly` is available. Extract supports capped keyless
+access, so do not look for an API key or authenticate before the first request.
 
-```bash
-curl -fsSL https://cli.tavily.com/install.sh | bash && tvly login
-```
-
-Do not skip this step or fall back to other tools.
-
-See [tavily-cli](../tavily-cli/SKILL.md) for alternative install methods and auth options.
+If `tvly` is missing, follow the [tavily-cli setup](../tavily-cli/SKILL.md#setup)
+before retrying. If the keyless cap is reached in an interactive session, run
+`tvly login` to open browser OAuth, then retry the original extraction once. In
+an unattended environment, report the cap and authentication options instead
+of starting an interactive flow. Do not start a second login immediately after
+guided setup has completed.
 
 ## When to use
 
@@ -43,7 +43,7 @@ tvly extract "https://example.com/docs" --query "authentication API" --chunks-pe
 tvly extract "https://app.example.com" --extract-depth advanced --json
 
 # Save to file
-tvly extract "https://example.com/article" -o article.md
+tvly extract "https://example.com/article" -o article.json
 ```
 
 ## Options
@@ -56,7 +56,7 @@ tvly extract "https://example.com/article" -o article.md
 | `--format` | `markdown` (default) or `text` |
 | `--include-images` | Include image URLs |
 | `--timeout` | Max wait time (1-60 seconds) |
-| `-o, --output` | Save output to file |
+| `-o, --output` | Save the JSON response to a file |
 | `--json` | Structured JSON output |
 
 ## Extract depth
@@ -72,6 +72,10 @@ tvly extract "https://example.com/article" -o article.md
 - **Use `--query` + `--chunks-per-source`** to get only relevant content instead of full pages.
 - **Try `basic` first**, fall back to `advanced` if content is missing.
 - **Set `--timeout`** for slow pages (up to 60s).
+- **Inspect `failed_results` even after exit code 0.** A successful request can
+  still return no extracted pages. Retry the affected URL with `advanced` when
+  appropriate, otherwise report the per-URL failure instead of treating the
+  request as complete.
 - If search results already contain the content you need (via `--include-raw-content`), skip the extract step.
 
 ## See also

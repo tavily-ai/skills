@@ -9,17 +9,17 @@ allowed-tools: Bash(tvly *)
 
 Web search returning LLM-optimized results with content snippets and relevance scores.
 
-## Before running any command
+## Before running
 
-If `tvly` is not found on PATH, install it first:
+Run search directly when `tvly` is available. Search supports capped keyless
+access, so do not look for an API key or authenticate before the first request.
 
-```bash
-curl -fsSL https://cli.tavily.com/install.sh | bash && tvly login
-```
-
-Do not skip this step or fall back to other tools.
-
-See [tavily-cli](../tavily-cli/SKILL.md) for alternative install methods and auth options.
+If `tvly` is missing, follow the [tavily-cli setup](../tavily-cli/SKILL.md#setup)
+before retrying. If the keyless cap is reached in an interactive session, run
+`tvly login` to open browser OAuth, then retry the original search once. In an
+unattended environment, report the cap and authentication options instead of
+starting an interactive flow. Do not start a second login immediately after
+guided setup has completed.
 
 ## When to use
 
@@ -64,7 +64,7 @@ tvly search "react hooks tutorial" --include-raw-content --max-results 3 --json
 | `--include-images` | Include image results |
 | `--include-image-descriptions` | Include AI image descriptions |
 | `--chunks-per-source` | Chunks per source (advanced/fast depth only) |
-| `-o, --output` | Save output to file |
+| `-o, --output` | Save the JSON response to a file |
 | `--json` | Structured JSON output |
 
 ## Search depth
@@ -83,6 +83,10 @@ tvly search "react hooks tutorial" --include-raw-content --max-results 3 --json
 - **Use `--include-raw-content`** when you need full page text (saves a separate extract call).
 - **Use `--include-domains`** to focus on trusted sources.
 - **Use `--time-range`** for recent information.
+- **Verify identity-sensitive facts at the exact primary source.** For releases,
+  versions, ownership, or similarly named projects, confirm the official
+  repository or domain instead of trusting a generated answer or package-name
+  match alone.
 - Read from stdin: `echo "query" | tvly search - --json`
 
 ## See also
