@@ -147,7 +147,7 @@ Treat fields as optional and use `.get()` while filtering. Inspect
 
 | Option | Purpose |
 |--------|---------|
-| `--max-results` | Bound the search result count; default 5, maximum 20 |
+| `--max-results` | Bound the search result count; default 10, maximum 20 |
 | `--depth` | Choose `ultra-fast`, `fast`, `basic`, or `advanced` |
 | `--time-range` | Restrict results to `day`, `week`, `month`, or `year` |
 | `--include-domains` | Restrict results to a comma-separated list of trusted domains |

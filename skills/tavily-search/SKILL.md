@@ -51,7 +51,7 @@ tvly search "react hooks tutorial" --include-raw-content --max-results 3 --json
 | Option | Description |
 |--------|-------------|
 | `--depth` | `ultra-fast`, `fast`, `basic` (default), `advanced` |
-| `--max-results` | Max results, 0-20 (default: 5) |
+| `--max-results` | Max results, 0-20 (default: 10) |
 | `--topic` | `general` (default), `news`, `finance` |
 | `--time-range` | `day`, `week`, `month`, `year` |
 | `--start-date` | Results after date (YYYY-MM-DD) |
@@ -63,7 +63,7 @@ tvly search "react hooks tutorial" --include-raw-content --max-results 3 --json
 | `--include-raw-content` | Include full page content (`markdown` or `text`) |
 | `--include-images` | Include image results |
 | `--include-image-descriptions` | Include AI image descriptions |
-| `--chunks-per-source` | Chunks per source (advanced/fast depth only) |
+| `--chunks-per-source` | Chunks per source, 1-3 (basic, advanced and fast depths) |
 | `-o, --output` | Save the JSON response to a file |
 | `--json` | Structured JSON output |
 
