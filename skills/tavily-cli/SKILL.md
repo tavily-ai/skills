@@ -114,4 +114,5 @@ tvly crawl "https://docs.example.com" --output-dir ./docs/
 - **Always quote URLs** — shell interprets `?` and `&` as special characters.
 - **Use `--json` for agentic workflows** when the selected command exposes it.
 - **Read from stdin with `-`** — `echo "query" | tvly search -`
+- **Attribute usage to the calling agent** — when running `tvly search`, `extract`, `map`, `crawl` or `research` on behalf of a named agent or tool, pass `--client-name <agent>` (for example `--client-name claude-code`); omit it if the caller is unknown.
 - **Exit codes**: 0 = success, 1 = setup/update failure, 2 = bad input, 3 = auth error, 4 = API or live-verification error.
