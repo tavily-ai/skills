@@ -39,29 +39,20 @@ the role, event or term, and search for that.
 
 Each result's `content` is already the passages that match your query; print it whole rather than cutting it short.
 
-**Run independent searches in parallel.** Start every call at once in one command, each writing to its own
-file, then `wait`. Never run them one after another, in a loop or chained with `;`: put `&` after each one.
-With MCP tools, issue the calls together in one turn.
-
-```bash
-D=$(mktemp -d); echo "$D"
-tvly search "Rust 2024 edition release date" --depth advanced --max-results 10 --json -o "$D/a.json" &
-tvly search "Go 1.22 loop variable change" --depth advanced --max-results 10 --json -o "$D/b.json" &
-wait
-python3 -c 'import json,sys
-for f in sys.argv[1:]:
-    for r in json.load(open(f)).get("results", []): print(r["url"], r["content"])' "$D"/*.json
-```
+**Batch independent searches.** Issue the searches for one step together in one turn, one call each: separate
+`tavily_search` calls with MCP tools, or separate Bash calls with the CLI, each holding a single `tvly` command.
+MCP calls run in parallel; Bash calls run one after another but still use one turn. Don't add pipes, `&`, `$(...)`
+or other programs to a `tvly` call, which make the client ask for permission. Put the query in single quotes:
+`tvly search 'Rust 2024 edition release date' --depth advanced --max-results 10 --json`.
 
 **Ask for 10 results.** Set `max_results` to 10 (`--max-results 10`). **Narrow before you widen.** Filters help more than raising `max_results` further. Use `time_range` or dates for
 recent events or a stated period. Use `include_domains` when the answer lives on an official or named site; it
 is a hard filter, so search again without it if it doesn't find the page.
 
-**Keep large results on disk.** Each shell command starts fresh, so fetch and filter in the same command and
-print only the passages you need, with their URLs, in one pass. To reuse a file later, use the literal path the
-first command printed; never look for it with a glob over temp folders, which can read another task's files.
-Keep stderr visible and print how many results your filter kept, so an empty result shows. An MCP result lands
-straight in your context, so keep those calls small.
+**Keep large results on disk.** When a result is long, such as raw page content or a crawl, save it with
+`-o <file>` and read the parts you need with your file-reading tool instead of printing it all. To reuse a file,
+use the path you wrote; never look for it with a glob over temp folders, which can read another task's files. An
+MCP result lands straight in your context, so keep those calls small.
 
 **Read the results critically.** Count independent sources, not results. Treat a generated answer as a summary
 to check, never as a source.
