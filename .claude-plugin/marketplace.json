@@ -2,21 +2,21 @@
   "name": "tavily-plugins",
   "owner": {
     "name": "Tavily",
-    "email": "dean.sacoransky@tavily.com"
+    "email": "support@tavily.com"
   },
   "metadata": {
     "description": "Official Tavily plugin for Claude Code - web search, research, and crawling capabilities",
-    "version": "1.0.0"
+    "version": "2.0.0"
   },
   "plugins": [
     {
       "name": "tavily",
       "source": "./",
       "description": "Build AI applications with real-time web data using Tavily's search, extract, crawl, and research APIs.",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "author": {
         "name": "Tavily Team",
-        "email": "dean.sacoransky@tavily.com"
+        "email": "support@tavily.com"
       },
       "homepage": "https://github.com/tavily-ai/skills",
       "repository": "https://github.com/tavily-ai/skills",
