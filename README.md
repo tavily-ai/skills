@@ -64,16 +64,11 @@ tvly update
 
 ## Available Skills
 
-| Skill | Description |
-|-------|-------------|
-| **[tavily-search](skills/tavily-search/SKILL.md)** | Search the web with LLM-optimized results. Supports domain filtering, time ranges, and multiple search depths. |
-| **[tavily-extract](skills/tavily-extract/SKILL.md)** | Extract clean markdown/text content from specific URLs. Handles JS-rendered pages. |
-| **[tavily-crawl](skills/tavily-crawl/SKILL.md)** | Crawl websites and extract content from multiple pages. Save as local markdown files. |
-| **[tavily-map](skills/tavily-map/SKILL.md)** | Discover all URLs on a website without extracting content. Faster than crawling. |
-| **[tavily-research](skills/tavily-research/SKILL.md)** | Comprehensive AI-powered research with citations. Multi-source synthesis in 30-120s. |
-| **[tavily-dynamic-search](skills/tavily-dynamic-search/SKILL.md)** | Filter and deduplicate large search or extraction results without flooding agent context. |
-| **[tavily-cli](skills/tavily-cli/SKILL.md)** | Overview skill with workflow guide, install/auth instructions. |
-| **[tavily-best-practices](skills/tavily-best-practices/SKILL.md)** | Reference docs for building production-ready Tavily integrations. |
+| Skill | Type | Description |
+|-------|-------|-------------|
+| **[tavily-search](skills/core/tavily-search/SKILL.md)** | Core | Search, extract, map and crawl as one toolkit. Search is in the skill; the other tools live in `references/`. |
+| **[tavily-research](skills/tavily-research/SKILL.md)** | Research | AI-powered research with citations through the research endpoint. |
+| **[tavily-best-practices](skills/tavily-best-practices/SKILL.md)** | SDK | Reference docs for building production-ready Tavily integrations. |
 
 ## Workflow
 
@@ -83,4 +78,4 @@ Start simple, escalate when needed:
 2. **Extract** — Get content from a specific URL (`tvly extract "https://..." --json`)
 3. **Map** — Discover URLs on a site (`tvly map "https://..." --json`)
 4. **Crawl** — Bulk extract from a site section (`tvly crawl "https://..." --output-dir ./docs/`)
-5. **Research** — Deep multi-source analysis (`tvly research "topic" --model pro`)
+5. **Research** — an in-depth, cited report (`tavily-research`)
