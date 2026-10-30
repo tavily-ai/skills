@@ -70,8 +70,6 @@ tvly update
 | **[tavily-research](skills/tavily-research/SKILL.md)** | Research | AI-powered research with citations through the research endpoint. |
 | **[tavily-best-practices](skills/tavily-best-practices/SKILL.md)** | SDK | Reference docs for building production-ready Tavily integrations. |
 
-See [CONVENTIONS.md](CONVENTIONS.md) for how the skills fit together.
-
 ## Workflow
 
 Start simple, escalate when needed:
