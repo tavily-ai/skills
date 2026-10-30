@@ -21,6 +21,7 @@
     "extract"
   ],
   "skills": [
-    "./skills/core/"
+    "./skills/core/",
+    "./skills/tasks/"
   ]
 }
