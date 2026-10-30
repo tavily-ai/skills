@@ -67,7 +67,10 @@ tvly update
 | Skill | Type | Description |
 |-------|-------|-------------|
 | **[tavily-search](skills/core/tavily-search/SKILL.md)** | Core | Search, extract, map and crawl as one toolkit. Search is in the skill; the other tools live in `references/`. |
-| **[tavily-research](skills/tavily-research/SKILL.md)** | Research | AI-powered research with citations through the research endpoint. |
+| **[tavily-research](skills/tasks/tavily-research/SKILL.md)** | Task | In-depth research: many sources gathered and weighed into a cited report. |
+| **[tavily-entity](skills/tasks/tavily-entity/SKILL.md)** | Task | One company or person for a CRM, or a CSV of rows they already have. |
+| **[tavily-list](skills/tasks/tavily-list/SKILL.md)** | Task | Deduplicated table of matches, with a cap. Not an exhaustive census. |
+| **[tavily-monitor](skills/tasks/tavily-monitor/SKILL.md)** | Task | A search or extraction built to run on a cadence, with a baseline. |
 | **[tavily-best-practices](skills/tavily-best-practices/SKILL.md)** | SDK | Reference docs for building production-ready Tavily integrations. |
 
 ## Workflow
@@ -78,4 +81,4 @@ Start simple, escalate when needed:
 2. **Extract** — Get content from a specific URL (`tvly extract "https://..." --json`)
 3. **Map** — Discover URLs on a site (`tvly map "https://..." --json`)
 4. **Crawl** — Bulk extract from a site section (`tvly crawl "https://..." --output-dir ./docs/`)
-5. **Research** — an in-depth, cited report (`tavily-research`)
+5. **A finished result** — in-depth research (`tavily-research`), a CRM record or CSV enrichment (`tavily-entity`), a capped table of matches (`tavily-list`), or a check on a cadence (`tavily-monitor`)
