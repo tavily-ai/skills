@@ -1,6 +1,6 @@
 {
   "name": "tavily",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Build AI applications with real-time web data using Tavily's search, extract, crawl, and research APIs.",
   "author": {
     "name": "Tavily Team",
@@ -8,6 +8,7 @@
     "url": "https://www.tavily.com/"
   },
   "homepage": "https://docs.tavily.com",
+  "privacyPolicyUrl": "https://www.tavily.com/privacy",
   "repository": "https://github.com/tavily-ai/skills",
   "license": "MIT",
   "keywords": [
