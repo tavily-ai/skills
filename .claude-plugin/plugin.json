@@ -8,6 +8,7 @@
     "url": "https://www.tavily.com/"
   },
   "homepage": "https://docs.tavily.com",
+  "privacyPolicyUrl": "https://www.tavily.com/privacy",
   "repository": "https://github.com/tavily-ai/skills",
   "license": "MIT",
   "keywords": [
