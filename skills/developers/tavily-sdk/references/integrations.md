@@ -40,7 +40,7 @@ if not os.environ.get("TAVILY_API_KEY"):
 ### Tavily Search
 
 **Available parameters**
-- `max_results` (default: `5`)
+- `max_results` (default: `10`)
 - `topic` (`"general"`, `"news"`, `"finance"`)
 - `include_answer`
 - `include_raw_content`
@@ -60,7 +60,7 @@ if not os.environ.get("TAVILY_API_KEY"):
 from langchain_tavily import TavilySearch
 
 tavily_search = TavilySearch(
-    max_results=5,
+    max_results=10,
     topic="general"
 )
 ```
@@ -445,7 +445,7 @@ tools = [
             "type": "object",
             "properties": {
                 "query": {"type": "string", "description": "Search query string."},
-                "max_results": {"type": "integer", "default": 5},
+                "max_results": {"type": "integer", "default": 10},
                 "search_depth": {
                     "type": "string",
                     "enum": ["basic", "advanced"],
@@ -633,7 +633,7 @@ const result = await generateText({
   prompt: "What are the latest AI developments?",
   tools: {
     tavilySearch: tavilySearch({
-      maxResults: 5,
+      maxResults: 10,
       searchDepth: "advanced",
     }),
   },
