@@ -1,0 +1,46 @@
+name: Version check
+
+# Any change to skills or the plugin manifests must bump the version,
+# so every update on main ships as a GitHub release.
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  version-bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check manifests agree and version is bumped
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          versions() {
+            jq -r '.version' "$1/plugin.json"
+            jq -r '.metadata.version, .plugins[0].version' "$1/marketplace.json"
+          }
+          head=$(versions .claude-plugin | sort -u)
+          if [ "$(echo "$head" | wc -l)" -ne 1 ]; then
+            echo "::error::plugin.json and marketplace.json versions differ: $(echo $head)"
+            exit 1
+          fi
+
+          if git diff --quiet "$BASE" HEAD -- skills .claude-plugin; then
+            echo "No skill or manifest changes; no bump needed."
+            exit 0
+          fi
+
+          base=$(git show "$BASE:.claude-plugin/plugin.json" | jq -r '.version')
+          newest=$(printf '%s\n%s\n' "$base" "$head" | sort -V | tail -1)
+          if [ "$head" = "$base" ] || [ "$newest" != "$head" ]; then
+            echo "::error::Skills changed but version is still $base. Bump it in .claude-plugin/plugin.json and marketplace.json."
+            exit 1
+          fi
+          if git rev-parse -q --verify "refs/tags/v$head" >/dev/null; then
+            echo "::error::Tag v$head already exists. Pick a new version."
+            exit 1
+          fi
+          echo "Version $base -> $head"

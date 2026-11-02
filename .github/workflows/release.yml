@@ -1,0 +1,27 @@
+name: Release
+
+# Cuts a GitHub release when main has a version with no tag yet.
+on:
+  push:
+    branches: [main]
+    paths: [.claude-plugin/plugin.json]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create release for new version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="v$(jq -r '.version' .claude-plugin/plugin.json)"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "$tag already released."
+            exit 0
+          fi
+          gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --generate-notes --latest

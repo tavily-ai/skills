@@ -82,3 +82,12 @@ Start simple, escalate when needed:
 3. **Map** — Discover URLs on a site (`tvly map "https://..." --json`)
 4. **Crawl** — Bulk extract from a site section (`tvly crawl "https://..." --output-dir ./docs/`)
 5. **A finished result** — in-depth research (`tavily-research`), a CRM record or CSV enrichment (`tavily-entity`), a capped table of matches (`tavily-list`), or a check on a cadence (`tavily-monitor`)
+
+## Releases
+
+Every change to `skills/` or `.claude-plugin/` ships as a [GitHub release](https://github.com/tavily-ai/skills/releases). In the same PR:
+
+1. Bump `version` in `.claude-plugin/plugin.json` and both `version` fields in `.claude-plugin/marketplace.json` (semver: patch for fixes and wording, minor for new skills or references, major for removed or renamed skills).
+2. Merge. The `Release` workflow tags `vX.Y.Z` and publishes the release with notes generated from merged PRs.
+
+The `Version check` workflow fails a PR that changes skills without a bump.
