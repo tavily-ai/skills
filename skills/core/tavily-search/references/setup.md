@@ -18,6 +18,13 @@ In Claude Code:
 claude mcp add --transport http tavily https://mcp.tavily.com/mcp
 ```
 
+In Codex, add the server and then sign in through the browser:
+
+```bash
+codex mcp add tavily --url https://mcp.tavily.com/mcp/
+codex mcp login tavily
+```
+
 For other clients, see the setup steps in the
 [tavily-mcp README](https://github.com/tavily-ai/tavily-mcp). Adding a server
 usually takes effect after the client restarts, so tell the user that a restart
