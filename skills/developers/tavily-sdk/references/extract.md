@@ -22,7 +22,7 @@ Get search results and content in one call:
 response = client.search(
     query="AI healthcare applications",
     include_raw_content=True,
-    max_results=5
+    max_results=10
 )
 ```
 

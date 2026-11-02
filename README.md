@@ -71,7 +71,7 @@ tvly update
 | **[tavily-entity](skills/tasks/tavily-entity/SKILL.md)** | Task | One company or person for a CRM, or a CSV of rows they already have. |
 | **[tavily-list](skills/tasks/tavily-list/SKILL.md)** | Task | Deduplicated table of matches, with a cap. Not an exhaustive census. |
 | **[tavily-monitor](skills/tasks/tavily-monitor/SKILL.md)** | Task | A search or extraction built to run on a cadence, with a baseline. |
-| **[tavily-best-practices](skills/tavily-best-practices/SKILL.md)** | SDK | Reference docs for building production-ready Tavily integrations. |
+| **[tavily-sdk](skills/developers/tavily-sdk/SKILL.md)** | Developers | Reference docs for building production-ready Tavily integrations. |
 
 ## Workflow
 

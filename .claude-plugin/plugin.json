@@ -22,6 +22,7 @@
   ],
   "skills": [
     "./skills/core/",
-    "./skills/tasks/"
+    "./skills/tasks/",
+    "./skills/developers/"
   ]
 }
