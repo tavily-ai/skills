@@ -1,0 +1,30 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Core",
+      "description": "Skills for using Tavily's endpoints in your agent",
+      "skills": [
+        "tavily-search"
+      ]
+    },
+    {
+      "title": "Tasks",
+      "description": "Skills for solving recurring problems using Tavily",
+      "skills": [
+        "tavily-research",
+        "tavily-entity",
+        "tavily-list",
+        "tavily-monitor"
+      ]
+    },
+    {
+      "title": "Developers",
+      "description": "Skills for integrating Tavily into your production apps",
+      "skills": [
+        "tavily-sdk"
+      ]
+    }
+  ]
+}
