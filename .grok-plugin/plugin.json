@@ -1,0 +1,20 @@
+{
+  "name": "tavily",
+  "version": "2.3.0",
+  "description": "Web search, content extraction, website crawling, URL discovery, and deep research for Grok Build via Tavily's hosted MCP server and skills.",
+  "author": {
+    "name": "Tavily",
+    "email": "tavily-integrations@nebius.com",
+    "url": "https://www.tavily.com/"
+  },
+  "homepage": "https://docs.tavily.com",
+  "repository": "https://github.com/tavily-ai/skills",
+  "license": "MIT",
+  "keywords": ["tavily", "web-search", "content-extraction", "crawling", "research", "mcp", "grok", "grok build"],
+  "skills": [
+    "./skills/core/",
+    "./skills/tasks/",
+    "./skills/developers/"
+  ],
+  "mcpServers": "./.mcp.json"
+}
