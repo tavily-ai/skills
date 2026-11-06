@@ -55,6 +55,27 @@ uv tool install tavily-cli   # or: pip install tavily-cli
 Then use `tvly init --skip-skills` for guided authentication and verification,
 or `tvly login` when you only need to authenticate.
 
+### Claude Code plugin
+
+```
+/plugin install tavily --marketplace tavily-ai/skills
+```
+
+It adds these skills and the hosted Tavily MCP server.
+
+### Cursor plugin
+
+Install **Tavily** from the [Cursor Marketplace](https://cursor.com/marketplace/tavily).
+It adds these skills and the hosted Tavily MCP server.
+
+### Codex plugin
+
+```bash
+codex plugin marketplace add tavily-ai/skills
+```
+
+Then install **Tavily** from `/plugins`. It adds these skills and the hosted Tavily MCP server.
+
 ### Keep the CLI current
 
 ```bash

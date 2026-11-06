@@ -1,0 +1,26 @@
+{
+  "name": "tavily",
+  "displayName": "Tavily",
+  "version": "2.3.0",
+  "description": "Web search, content extraction, crawling, deep research, and URL discovery. MCP tools plus skills; CLI for terminal agents.",
+  "author": {
+    "name": "Tavily",
+    "email": "tavily-integrations@nebius.com"
+  },
+  "homepage": "https://docs.tavily.com",
+  "repository": "https://github.com/tavily-ai/skills",
+  "license": "MIT",
+  "logo": "assets/tavily-logo.svg",
+  "keywords": ["search", "web-search", "rag", "agents", "llm", "research", "crawl", "extract", "map", "tavily", "tavily-cli", "mcp"],
+  "skills": [
+    "./skills/core/",
+    "./skills/tasks/",
+    "./skills/developers/"
+  ],
+  "rules": "./rules/",
+  "mcpServers": {
+    "tavily": {
+      "url": "https://mcp.tavily.com/mcp"
+    }
+  }
+}

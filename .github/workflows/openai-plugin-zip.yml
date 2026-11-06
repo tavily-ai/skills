@@ -1,0 +1,53 @@
+name: OpenAI plugin ZIP
+
+# Builds the ZIP that is uploaded to the OpenAI plugin directory
+# (platform.openai.com/plugins). The upload itself is manual.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check version
+        id: version
+        run: |
+          version=$(jq -r .version .codex-plugin/plugin.json)
+          if [ "${{ github.event_name }}" = "release" ] && [ "${GITHUB_REF_NAME#v}" != "$version" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match .codex-plugin/plugin.json version $version"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      # The directory rejects packages with lifecycle hooks or app references,
+      # so the ZIP holds only the Codex manifest, MCP config, skills and assets.
+      - name: Build ZIP
+        run: |
+          zip_name="tavily-openai-plugin-${{ steps.version.outputs.version }}.zip"
+          mkdir dist
+          zip -r "dist/$zip_name" .codex-plugin .mcp.json skills assets LICENSE README.md -x '*.DS_Store'
+          if jq -e '.hooks or .apps' .codex-plugin/plugin.json > /dev/null; then
+            echo ".codex-plugin/plugin.json declares hooks or apps"
+            exit 1
+          fi
+          unzip -l "dist/$zip_name"
+          echo "ZIP_NAME=$zip_name" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openai-plugin-zip
+          path: dist/${{ env.ZIP_NAME }}
+
+      - name: Attach to release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" "dist/$ZIP_NAME" --clobber

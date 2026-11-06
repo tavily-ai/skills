@@ -1,0 +1,62 @@
+name: Validate plugins
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Claude Code plugin
+        run: npx -y @anthropic-ai/claude-code@2.1.319 plugin validate .
+
+      # Schema pinned to the last cursor/plugins commit that changed it.
+      - name: Cursor plugin
+        run: |
+          curl -fsSL -o /tmp/cursor-plugin.schema.json \
+            https://raw.githubusercontent.com/cursor/plugins/5229aad76c37451561c5b81a9b5072ae1c549a5b/schemas/plugin.schema.json
+          npm install --no-save --silent ajv@8 ajv-formats@3
+          node -e '
+            const Ajv = require("ajv");
+            const ajv = new Ajv({ strict: false, allErrors: true });
+            require("ajv-formats")(ajv);
+            const validate = ajv.compile(require("/tmp/cursor-plugin.schema.json"));
+            const manifest = require("./.cursor-plugin/plugin.json");
+            if (!validate(manifest)) {
+              console.error(JSON.stringify(validate.errors, null, 2));
+              process.exit(1);
+            }
+            console.log("Cursor manifest is valid");
+          '
+
+      # OpenAI rejects packages with hooks or app references, and Codex
+      # package validation requires both icons.
+      - name: Codex plugin
+        run: |
+          manifest=.codex-plugin/plugin.json
+          if jq -e '.hooks or .apps' "$manifest" > /dev/null; then
+            echo "$manifest declares hooks or apps"
+            exit 1
+          fi
+          for icon in $(jq -r '.interface.logo, .interface.composerIcon' "$manifest"); do
+            test -f "$icon" || { echo "Missing icon: $icon"; exit 1; }
+          done
+          echo "Codex manifest is valid"
+
+      - name: Versions match
+        run: |
+          versions=$(jq -r '.version' .claude-plugin/plugin.json .cursor-plugin/plugin.json .codex-plugin/plugin.json
+                     jq -r '.plugins[].version' .claude-plugin/marketplace.json)
+          echo "$versions"
+          if [ "$(echo "$versions" | sort -u | wc -l)" -ne 1 ]; then
+            echo "Plugin manifests have different versions"
+            exit 1
+          fi

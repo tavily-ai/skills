@@ -1,0 +1,13 @@
+---
+description: "Reminds the agent to use Tavily when a request needs live web data or the contents of a web page"
+globs:
+alwaysApply: true
+---
+
+# Tavily Web Access
+
+Tavily's MCP tools give you live access to the web. Reach for them whenever they apply:
+
+- **Recent or changing information**: For recent events, news, or anything that may be newer than your training data, use `tavily_search`.
+- **Documentation and code examples**: For API docs, library usage, or code snippets, use `tavily_search`.
+- **Reading a page**: When the user shares a URL or asks about a specific page, read it with `tavily_extract`.
