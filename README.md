@@ -76,6 +76,11 @@ codex plugin marketplace add tavily-ai/skills
 
 Then install **Tavily** from `/plugins`. It adds these skills and the hosted Tavily MCP server.
 
+### Grok Build plugin
+
+In Grok Build, open `/plugin`, search for **Tavily**, and install it.
+It adds these skills and the hosted Tavily MCP server.
+
 ### Keep the CLI current
 
 ```bash
