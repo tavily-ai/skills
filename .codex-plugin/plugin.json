@@ -27,7 +27,8 @@
     "websiteURL": "https://www.tavily.com",
     "privacyPolicyURL": "https://www.tavily.com/privacy",
     "termsOfServiceURL": "https://www.tavily.com/terms",
-    "logo": "./assets/tavily-logo.svg",
+    "logo": "./assets/tavily-logo.png",
+    "composerIcon": "./assets/tavily-logo.png",
     "defaultPrompt": [
       "Search the web for the latest release notes of this library",
       "Read this URL and summarize it",
