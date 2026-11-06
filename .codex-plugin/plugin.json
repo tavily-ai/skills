@@ -23,7 +23,7 @@
     "longDescription": "The Web Infrastructure Layer for AI Agents. A purpose-built web API for real-time search, scraping, crawling, and structured data retrieval. AI-native enterprises trust Tavily for data enrichment, research, RAG pipelines, and autonomous AI systems-ensuring fresh, accurate, and scalable intelligence.",
     "developerName": "Tavily",
     "category": "Developer Tools",
-    "capabilities": [],
+    "capabilities": ["Search the web", "Extract page content", "Map and crawl websites", "Run cited research"],
     "websiteURL": "https://www.tavily.com",
     "supportURL": "https://www.tavily.com/contact",
     "privacyPolicyURL": "https://www.tavily.com/privacy",
