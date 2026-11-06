@@ -12,9 +12,12 @@
   "license": "MIT",
   "keywords": ["tavily", "web-search", "content-extraction", "crawling", "research", "mcp", "grok", "grok build"],
   "skills": [
-    "./skills/core/",
-    "./skills/tasks/",
-    "./skills/developers/"
+    "./skills/core/tavily-search/",
+    "./skills/tasks/tavily-research/",
+    "./skills/tasks/tavily-entity/",
+    "./skills/tasks/tavily-list/",
+    "./skills/tasks/tavily-monitor/",
+    "./skills/developers/tavily-sdk/"
   ],
   "mcpServers": "./.mcp.json"
 }
