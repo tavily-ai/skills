@@ -11,6 +11,13 @@ on:
 permissions:
   contents: write
 
+env:
+  # The plugin's ID in the OpenAI dashboard. Uploads must use it as the
+  # manifest name. The repo manifest keeps "tavily" for Codex marketplace installs.
+  OPENAI_PLUGIN_NAME: app-69f271663a288191ac98f46bed7cb032
+  # The MCP URL the existing app was submitted with. Updates must keep it.
+  OPENAI_MCP_URL: https://mcp.tavily.com/mcp/
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -32,12 +39,17 @@ jobs:
       - name: Build ZIP
         run: |
           zip_name="tavily-openai-plugin-${{ steps.version.outputs.version }}.zip"
-          mkdir dist
-          zip -r "dist/$zip_name" .codex-plugin .mcp.json skills assets LICENSE README.md -x '*.DS_Store'
           if jq -e '.hooks or .apps' .codex-plugin/plugin.json > /dev/null; then
             echo ".codex-plugin/plugin.json declares hooks or apps"
             exit 1
           fi
+          mkdir dist package
+          cp -R .codex-plugin .mcp.json skills assets LICENSE README.md package/
+          jq --arg name "$OPENAI_PLUGIN_NAME" '.name = $name' .codex-plugin/plugin.json > package/.codex-plugin/plugin.json
+          jq --arg url "$OPENAI_MCP_URL" '.mcpServers.tavily.url = $url' .mcp.json > package/.mcp.json
+          (cd package && zip -r "../dist/$zip_name" . -x '*.DS_Store')
+          unzip -p "dist/$zip_name" .codex-plugin/plugin.json | jq -e --arg name "$OPENAI_PLUGIN_NAME" '.name == $name' > /dev/null
+          unzip -p "dist/$zip_name" .mcp.json | jq -e --arg url "$OPENAI_MCP_URL" '.mcpServers.tavily.url == $url' > /dev/null
           unzip -l "dist/$zip_name"
           echo "ZIP_NAME=$zip_name" >> "$GITHUB_ENV"
 

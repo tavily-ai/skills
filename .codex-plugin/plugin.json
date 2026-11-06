@@ -1,7 +1,7 @@
 {
   "name": "tavily",
   "version": "2.3.0",
-  "description": "Web search, content extraction, crawling, deep research, and URL discovery with Tavily. MCP tools plus skills.",
+  "description": "The Web Infrastructure Layer for AI Agents. A purpose-built web API for real-time search, scraping, crawling, and structured data retrieval. AI-native enterprises trust Tavily for data enrichment, research, RAG pipelines, and autonomous AI systems-ensuring fresh, accurate, and scalable intelligence.",
   "author": {
     "name": "Tavily",
     "email": "tavily-integrations@nebius.com",
@@ -19,20 +19,21 @@
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Tavily",
-    "shortDescription": "Live web search, extraction, and research",
-    "longDescription": "Search the web, read pages, map and crawl sites, and run cited research with Tavily. Includes the hosted Tavily MCP server and skills for search, research, entity enrichment, lists, monitoring, and the Tavily SDK.",
+    "shortDescription": "Web search for AI",
+    "longDescription": "The Web Infrastructure Layer for AI Agents. A purpose-built web API for real-time search, scraping, crawling, and structured data retrieval. AI-native enterprises trust Tavily for data enrichment, research, RAG pipelines, and autonomous AI systems-ensuring fresh, accurate, and scalable intelligence.",
     "developerName": "Tavily",
-    "category": "Productivity",
-    "capabilities": ["Read"],
+    "category": "Developer Tools",
+    "capabilities": ["Search the web", "Extract page content", "Map and crawl websites", "Run cited research"],
     "websiteURL": "https://www.tavily.com",
+    "supportURL": "https://www.tavily.com/contact",
     "privacyPolicyURL": "https://www.tavily.com/privacy",
     "termsOfServiceURL": "https://www.tavily.com/terms",
     "logo": "./assets/tavily-logo.png",
     "composerIcon": "./assets/tavily-logo.png",
     "defaultPrompt": [
-      "Search the web for the latest release notes of this library",
-      "Read this URL and summarize it",
-      "Research this company and cite your sources"
+      "Find key decision-makers at [company] and summarize their professional backgrounds.",
+      "Research [company], including its products, competitors, and latest news.",
+      "Find the latest documentation and code examples for integrating [API or library] into my project."
     ]
   }
 }
