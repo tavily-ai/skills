@@ -1,10 +1,10 @@
 {
   "name": "tavily",
-  "version": "2.1.0",
+  "version": "2.3.0",
   "description": "Build AI applications with real-time web data using Tavily's search, extract, crawl, and research APIs.",
   "author": {
     "name": "Tavily Team",
-    "email": "support@tavily.com",
+    "email": "tavily-integrations@nebius.com",
     "url": "https://www.tavily.com/"
   },
   "homepage": "https://docs.tavily.com",
@@ -25,5 +25,18 @@
     "./skills/core/",
     "./skills/tasks/",
     "./skills/developers/"
-  ]
+  ],
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "awk 'f>=2; /^---$/{f++}' \"${CLAUDE_PLUGIN_ROOT}/rules/tavily-awareness.mdc\""
+          }
+        ]
+      }
+    ]
+  }
 }
