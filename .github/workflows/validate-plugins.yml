@@ -56,8 +56,14 @@ jobs:
           curl -fsSL https://x.ai/cli/install.sh | GROK_BIN_DIR="$RUNNER_TEMP/grok" bash
           echo "$RUNNER_TEMP/grok" >> "$GITHUB_PATH"
 
+      # xAI's catalog index only finds skills listed one folder per entry,
+      # so the Grok manifest names each skill and must list all of them.
       - name: Grok plugin
-        run: grok plugin validate .
+        run: |
+          grok plugin validate .
+          diff <(find skills -name SKILL.md -mindepth 3 -maxdepth 3 -exec dirname {} \; | sort) \
+               <(jq -r '.skills[]' .grok-plugin/plugin.json | sed 's#^\./##; s#/$##' | sort) \
+            || { echo "Every skill folder must be listed in .grok-plugin/plugin.json"; exit 1; }
 
       - name: Versions match
         run: |
