@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "opencode-tavily",
+      "name": "@tavily/opencode-plugin",
       "devDependencies": {
         "@opencode-ai/plugin": "^1.18.29",
         "@opencode/plugin": "^2.0.23",

@@ -1,7 +1,7 @@
 {
-  "name": "opencode-tavily",
+  "name": "@tavily/opencode-plugin",
   "version": "2.3.0",
-  "description": "Tavily plugin for OpenCode \u2014 web search, content extraction, crawling, URL discovery, and deep research with citations",
+  "description": "Tavily plugin for OpenCode — web search, content extraction, crawling, URL discovery, and deep research with citations",
   "type": "module",
   "main": "index.ts",
   "files": [
@@ -29,6 +29,9 @@
     "directory": ".opencode-plugin"
   },
   "homepage": "https://tavily.com",
+  "publishConfig": {
+    "access": "public"
+  },
   "author": {
     "name": "Tavily"
   },

@@ -1,4 +1,4 @@
-# opencode-tavily
+# @tavily/opencode-plugin
 
 OpenCode plugin for [Tavily](https://tavily.com) — gives your AI agent reliable web search, content extraction, crawling, URL discovery, and deep research with citations.
 
@@ -13,7 +13,7 @@ Add the plugin to your `opencode.json`. The configuration key differs between ve
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugins": ["opencode-tavily"]
+  "plugins": ["@tavily/opencode-plugin"]
 }
 ```
 
@@ -22,7 +22,7 @@ Add the plugin to your `opencode.json`. The configuration key differs between ve
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["opencode-tavily"]
+  "plugin": ["@tavily/opencode-plugin"]
 }
 ```
 

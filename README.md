@@ -83,12 +83,12 @@ It adds these skills and the hosted Tavily MCP server.
 
 ### OpenCode plugin
 
-Add `opencode-tavily` to the `plugins` array in `opencode.json` (`plugin` on OpenCode 1.x):
+Add `@tavily/opencode-plugin` to the `plugins` array in `opencode.json` (`plugin` on OpenCode 1.x):
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugins": ["opencode-tavily"]
+  "plugins": ["@tavily/opencode-plugin"]
 }
 ```
 

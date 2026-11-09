@@ -1,6 +1,6 @@
 name: OpenCode plugin
 
-# Publishes the opencode-tavily npm package from .opencode-plugin/ when a release is
+# Publishes the @tavily/opencode-plugin npm package from .opencode-plugin/ when a release is
 # published. Uses npm trusted publishing (OIDC), so the repo holds no npm token;
 # the package's trusted publisher on npmjs.com must name this repo and this file.
 
@@ -44,7 +44,7 @@ jobs:
 
       - name: Publish unless this version is already on npm
         run: |
-          if npm view "opencode-tavily@$(jq -r .version package.json)" version > /dev/null 2>&1; then
+          if npm view "@tavily/opencode-plugin@$(jq -r .version package.json)" version > /dev/null 2>&1; then
             echo "Already published"
           else
             npm publish --provenance --access public
