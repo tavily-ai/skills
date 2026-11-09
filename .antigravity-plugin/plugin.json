@@ -1,0 +1,27 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "tavily",
+  "displayName": "Tavily",
+  "version": "2.3.0",
+  "description": "Search the web, read any page, map a site and crawl its pages with Tavily, the web access layer built for AI agents.",
+  "logo": "assets/tavily-logo.svg",
+  "suggestedPrompts": [
+    "Find the current migration guide for this project's main framework and list what we'd need to change",
+    "Search the docs and GitHub issues for the error I'm seeing and suggest a fix with sources",
+    "Read the latest API reference for a library we use and check our implementation against it"
+  ],
+  "author": {
+    "name": "Tavily",
+    "email": "tavily-integrations@nebius.com",
+    "url": "https://www.tavily.com/"
+  },
+  "homepage": "https://docs.tavily.com",
+  "repository": "https://github.com/tavily-ai/skills",
+  "license": "MIT",
+  "keywords": ["tavily", "web-search", "search", "extract", "crawl", "map", "mcp", "research"],
+  "skills": [
+    "./skills/core/",
+    "./skills/tasks/",
+    "./skills/developers/"
+  ]
+}

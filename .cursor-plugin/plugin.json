@@ -17,7 +17,7 @@
     "./skills/tasks/",
     "./skills/developers/"
   ],
-  "rules": "./rules/",
+  "rules": "./rules/tavily-awareness.mdc",
   "mcpServers": {
     "tavily": {
       "url": "https://mcp.tavily.com/mcp"

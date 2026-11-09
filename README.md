@@ -81,6 +81,25 @@ Then install **Tavily** from `/plugins`. It adds these skills and the hosted Tav
 In Grok Build, open `/plugin`, search for **Tavily**, and install it.
 It adds these skills and the hosted Tavily MCP server.
 
+### Antigravity plugin
+
+```bash
+agy plugin install tavily-ai/skills
+```
+
+In the Antigravity app, open **Customizations → Marketplace**, find **Tavily** and select **+**.
+It adds these skills, a rule that reminds the agent to use Tavily, and the hosted Tavily MCP server.
+Sign in from `/mcp` in the CLI, or from **Customizations → Installed → Tavily** in the app.
+
+### Gemini CLI extension
+
+```bash
+gemini extensions install https://github.com/tavily-ai/skills
+```
+
+It adds these skills, the same rule as context, and the hosted Tavily MCP server. Gemini CLI opens a
+browser for the Tavily sign-in on first use; run `/mcp auth tavily` to sign in again.
+
 ### Keep the CLI current
 
 ```bash

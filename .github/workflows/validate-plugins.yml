@@ -65,9 +65,23 @@ jobs:
                <(jq -r '.skills[]' .grok-plugin/plugin.json | sed 's#^\./##; s#/$##' | sort) \
             || { echo "Every skill folder must be listed in .grok-plugin/plugin.json"; exit 1; }
 
+      # Antigravity and Gemini have no validator that runs in CI, so check the
+      # manifests parse and the files they point to exist.
+      - name: Antigravity and Gemini manifests
+        run: |
+          manifest=.antigravity-plugin/plugin.json
+          for dir in $(jq -r '.skills[]' "$manifest"); do
+            test -d "$dir" || { echo "Missing skill folder: $dir"; exit 1; }
+          done
+          test -f "$(jq -r .logo "$manifest")" || { echo "Missing logo"; exit 1; }
+          jq -e '.mcpServers.tavily.serverUrl' mcp_config.json > /dev/null
+          jq -e '.mcpServers.tavily.httpUrl' gemini-extension.json > /dev/null
+          test -f "$(jq -r .contextFileName gemini-extension.json)" || { echo "Missing Gemini context file"; exit 1; }
+          echo "Antigravity and Gemini manifests are valid"
+
       - name: Versions match
         run: |
-          versions=$(jq -r '.version' .claude-plugin/plugin.json .cursor-plugin/plugin.json .codex-plugin/plugin.json .grok-plugin/plugin.json
+          versions=$(jq -r '.version' .claude-plugin/plugin.json .cursor-plugin/plugin.json .codex-plugin/plugin.json .grok-plugin/plugin.json .antigravity-plugin/plugin.json gemini-extension.json
                      jq -r '.plugins[].version' .claude-plugin/marketplace.json)
           echo "$versions"
           if [ "$(echo "$versions" | sort -u | wc -l)" -ne 1 ]; then

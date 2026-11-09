@@ -1,0 +1,14 @@
+{
+  "name": "tavily",
+  "version": "2.3.0",
+  "description": "Search the web, read any page, map a site and crawl its pages with Tavily, the web access layer built for AI agents.",
+  "mcpServers": {
+    "tavily": {
+      "httpUrl": "https://mcp.tavily.com/mcp",
+      "headers": {
+        "X-Client-Name": "gemini cli"
+      }
+    }
+  },
+  "contextFileName": "rules/tavily.md"
+}
