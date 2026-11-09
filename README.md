@@ -94,6 +94,22 @@ Add `@tavily/opencode-plugin` to the `plugins` array in `opencode.json` (`plugin
 
 It adds these skills. The plugin's source is in [`.opencode-plugin/`](.opencode-plugin/).
 
+### Antigravity plugin
+
+```bash
+agy plugin install tavily-ai/skills
+```
+
+It adds these skills and the hosted Tavily MCP server.
+
+### Gemini CLI extension
+
+```bash
+gemini extensions install https://github.com/tavily-ai/skills
+```
+
+It adds these skills and the hosted Tavily MCP server.
+
 ### Keep the CLI current
 
 ```bash

@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "tavily": {
+      "serverUrl": "https://mcp.tavily.com/mcp",
+      "headers": {
+        "X-Client-Name": "antigravity cli"
+      }
+    }
+  }
+}

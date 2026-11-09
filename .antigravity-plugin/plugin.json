@@ -1,0 +1,27 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "tavily",
+  "displayName": "Tavily",
+  "version": "2.3.0",
+  "description": "Web search, content extraction, website crawling, URL discovery, and deep research for Antigravity via Tavily's hosted MCP server and skills.",
+  "logo": "assets/tavily-logo.svg",
+  "suggestedPrompts": [
+    "Find key decision-makers at [company] and summarize their professional backgrounds.",
+    "Research [company], including its products, competitors, and latest news.",
+    "Find the latest documentation and code examples for integrating [API or library] into my project."
+  ],
+  "author": {
+    "name": "Tavily",
+    "email": "tavily-integrations@nebius.com",
+    "url": "https://www.tavily.com/"
+  },
+  "homepage": "https://docs.tavily.com",
+  "repository": "https://github.com/tavily-ai/skills",
+  "license": "MIT",
+  "keywords": ["tavily", "web-search", "content-extraction", "crawling", "research", "mcp"],
+  "skills": [
+    "./skills/core/",
+    "./skills/tasks/",
+    "./skills/developers/"
+  ]
+}

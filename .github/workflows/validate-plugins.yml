@@ -75,9 +75,22 @@ jobs:
           bun run check
           bun test
 
+      # Antigravity and Gemini have no validator that runs in CI, so check the
+      # manifests parse and the files they point to exist.
+      - name: Antigravity and Gemini manifests
+        run: |
+          manifest=.antigravity-plugin/plugin.json
+          for dir in $(jq -r '.skills[]' "$manifest"); do
+            test -d "$dir" || { echo "Missing skill folder: $dir"; exit 1; }
+          done
+          test -f "$(jq -r .logo "$manifest")" || { echo "Missing logo"; exit 1; }
+          jq -e '.mcpServers.tavily.serverUrl' mcp_config.json > /dev/null
+          jq -e '.mcpServers.tavily.httpUrl' gemini-extension.json > /dev/null
+          echo "Antigravity and Gemini manifests are valid"
+
       - name: Versions match
         run: |
-          versions=$(jq -r '.version' .claude-plugin/plugin.json .cursor-plugin/plugin.json .codex-plugin/plugin.json .grok-plugin/plugin.json .opencode-plugin/package.json
+          versions=$(jq -r '.version' .claude-plugin/plugin.json .cursor-plugin/plugin.json .codex-plugin/plugin.json .grok-plugin/plugin.json .opencode-plugin/package.json .antigravity-plugin/plugin.json gemini-extension.json
                      jq -r '.plugins[].version' .claude-plugin/marketplace.json)
           echo "$versions"
           if [ "$(echo "$versions" | sort -u | wc -l)" -ne 1 ]; then

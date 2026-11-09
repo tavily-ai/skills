@@ -1,0 +1,13 @@
+{
+  "name": "tavily",
+  "version": "2.3.0",
+  "description": "Web search, content extraction, website crawling, URL discovery, and deep research for Gemini CLI via Tavily's hosted MCP server and skills.",
+  "mcpServers": {
+    "tavily": {
+      "httpUrl": "https://mcp.tavily.com/mcp",
+      "headers": {
+        "X-Client-Name": "gemini cli"
+      }
+    }
+  }
+}

@@ -1,0 +1,68 @@
+name: Gemini CLI extension
+
+# Gemini CLI installs a GitHub extension from the latest release. It only
+# finds skills one folder below skills/, so the archive flattens the skill
+# folders. The platform prefixes make Gemini pick these archives over the
+# OpenAI ZIP attached to the same release.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to attach the archives to (leave empty to only build)
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+
+      - name: Check version
+        run: |
+          tag="${{ inputs.tag || (github.event_name == 'release' && github.ref_name) || '' }}"
+          version=$(jq -r .version gemini-extension.json)
+          if [ -n "$tag" ] && [ "${tag#v}" != "$version" ]; then
+            echo "Tag $tag does not match gemini-extension.json version $version"
+            exit 1
+          fi
+          echo "TAG=$tag" >> "$GITHUB_ENV"
+
+      - name: Build archives
+        run: |
+          mkdir -p dist package/skills
+          cp gemini-extension.json LICENSE README.md package/
+          for skill in $(find skills -name SKILL.md -mindepth 3 -maxdepth 3 -exec dirname {} \;); do
+            name=$(basename "$skill")
+            if [ -e "package/skills/$name" ]; then
+              echo "Duplicate skill name: $name"
+              exit 1
+            fi
+            cp -R "$skill" "package/skills/$name"
+          done
+          test "$(find package/skills -name SKILL.md -mindepth 2 -maxdepth 2 | wc -l)" -eq \
+               "$(find skills -name SKILL.md -mindepth 3 -maxdepth 3 | wc -l)"
+          (cd package && zip -r ../dist/tavily.zip . -x '*.DS_Store')
+          for platform in darwin linux win32; do
+            cp dist/tavily.zip "dist/$platform.tavily.zip"
+          done
+          rm dist/tavily.zip
+          unzip -l dist/linux.tavily.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gemini-extension
+          path: dist/
+
+      - name: Attach to release
+        if: env.TAG != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$TAG" dist/*.tavily.zip --clobber
