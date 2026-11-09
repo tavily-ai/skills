@@ -87,9 +87,7 @@ It adds these skills and the hosted Tavily MCP server.
 agy plugin install tavily-ai/skills
 ```
 
-In the Antigravity app, open **Customizations → Marketplace**, find **Tavily** and select **+**.
-It adds these skills, a rule that reminds the agent to use Tavily, and the hosted Tavily MCP server.
-Sign in from `/mcp` in the CLI, or from **Customizations → Installed → Tavily** in the app.
+It adds these skills and the hosted Tavily MCP server.
 
 ### Gemini CLI extension
 
@@ -97,8 +95,7 @@ Sign in from `/mcp` in the CLI, or from **Customizations → Installed → Tavil
 gemini extensions install https://github.com/tavily-ai/skills
 ```
 
-It adds these skills, the same rule as context, and the hosted Tavily MCP server. Gemini CLI opens a
-browser for the Tavily sign-in on first use; run `/mcp auth tavily` to sign in again.
+It adds these skills and the hosted Tavily MCP server.
 
 ### Keep the CLI current
 

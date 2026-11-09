@@ -39,8 +39,6 @@ jobs:
         run: |
           mkdir -p dist package/skills
           cp gemini-extension.json LICENSE README.md package/
-          mkdir package/rules
-          cp "$(jq -r .contextFileName gemini-extension.json)" package/rules/
           for skill in $(find skills -name SKILL.md -mindepth 3 -maxdepth 3 -exec dirname {} \;); do
             name=$(basename "$skill")
             if [ -e "package/skills/$name" ]; then

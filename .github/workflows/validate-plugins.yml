@@ -76,7 +76,6 @@ jobs:
           test -f "$(jq -r .logo "$manifest")" || { echo "Missing logo"; exit 1; }
           jq -e '.mcpServers.tavily.serverUrl' mcp_config.json > /dev/null
           jq -e '.mcpServers.tavily.httpUrl' gemini-extension.json > /dev/null
-          test -f "$(jq -r .contextFileName gemini-extension.json)" || { echo "Missing Gemini context file"; exit 1; }
           echo "Antigravity and Gemini manifests are valid"
 
       - name: Versions match
