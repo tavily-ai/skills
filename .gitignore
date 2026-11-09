@@ -28,3 +28,8 @@ env/
 # OS
 .DS_Store
 Thumbs.db
+
+# OpenCode plugin build output (copied by opencode/build.sh)
+opencode/node_modules/
+opencode/skills/
+opencode/LICENSE

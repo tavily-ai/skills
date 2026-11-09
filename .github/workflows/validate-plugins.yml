@@ -65,9 +65,19 @@ jobs:
                <(jq -r '.skills[]' .grok-plugin/plugin.json | sed 's#^\./##; s#/$##' | sort) \
             || { echo "Every skill folder must be listed in .grok-plugin/plugin.json"; exit 1; }
 
+      - uses: oven-sh/setup-bun@v2
+
+      - name: OpenCode plugin
+        working-directory: opencode
+        run: |
+          bun install --frozen-lockfile
+          ./build.sh
+          bun run check
+          bun test
+
       - name: Versions match
         run: |
-          versions=$(jq -r '.version' .claude-plugin/plugin.json .cursor-plugin/plugin.json .codex-plugin/plugin.json .grok-plugin/plugin.json
+          versions=$(jq -r '.version' .claude-plugin/plugin.json .cursor-plugin/plugin.json .codex-plugin/plugin.json .grok-plugin/plugin.json opencode/package.json
                      jq -r '.plugins[].version' .claude-plugin/marketplace.json)
           echo "$versions"
           if [ "$(echo "$versions" | sort -u | wc -l)" -ne 1 ]; then
