@@ -1,6 +1,6 @@
 name: OpenCode plugin
 
-# Publishes the opencode-tavily npm package from opencode/ when a release is
+# Publishes the opencode-tavily npm package from .opencode-plugin/ when a release is
 # published. Uses npm trusted publishing (OIDC), so the repo holds no npm token;
 # the package's trusted publisher on npmjs.com must name this repo and this file.
 
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: opencode
+        working-directory: .opencode-plugin
     steps:
       - uses: actions/checkout@v4
 
@@ -33,7 +33,7 @@ jobs:
         run: |
           version=$(jq -r .version package.json)
           if [ "${{ github.event_name }}" = "release" ] && [ "${GITHUB_REF_NAME#v}" != "$version" ]; then
-            echo "Tag $GITHUB_REF_NAME does not match opencode/package.json version $version"
+            echo "Tag $GITHUB_REF_NAME does not match .opencode-plugin/package.json version $version"
             exit 1
           fi
 

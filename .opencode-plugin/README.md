@@ -76,7 +76,7 @@ It also tells the agent to pass `--client-name opencode` to `tvly` commands for 
 
 ## Development
 
-The plugin lives in the `opencode/` folder of [tavily-ai/skills](https://github.com/tavily-ai/skills). `./build.sh` copies the repo's skills into the package, and `npm pack` runs it automatically. Publishing a release of the repo publishes the package to npm at the release version.
+The plugin lives in the `.opencode-plugin/` folder of [tavily-ai/skills](https://github.com/tavily-ai/skills). `./build.sh` copies the repo's skills into the package, and `npm pack` runs it automatically. Publishing a release of the repo publishes the package to npm at the release version.
 
 ```bash
 cd opencode

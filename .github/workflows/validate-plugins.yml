@@ -68,7 +68,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
 
       - name: OpenCode plugin
-        working-directory: opencode
+        working-directory: .opencode-plugin
         run: |
           bun install --frozen-lockfile
           ./build.sh
@@ -77,7 +77,7 @@ jobs:
 
       - name: Versions match
         run: |
-          versions=$(jq -r '.version' .claude-plugin/plugin.json .cursor-plugin/plugin.json .codex-plugin/plugin.json .grok-plugin/plugin.json opencode/package.json
+          versions=$(jq -r '.version' .claude-plugin/plugin.json .cursor-plugin/plugin.json .codex-plugin/plugin.json .grok-plugin/plugin.json .opencode-plugin/package.json
                      jq -r '.plugins[].version' .claude-plugin/marketplace.json)
           echo "$versions"
           if [ "$(echo "$versions" | sort -u | wc -l)" -ne 1 ]; then

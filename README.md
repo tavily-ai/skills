@@ -92,7 +92,7 @@ Add `opencode-tavily` to the `plugins` array in `opencode.json` (`plugin` on Ope
 }
 ```
 
-It adds these skills. The plugin's source is in [`opencode/`](opencode/).
+It adds these skills. The plugin's source is in [`.opencode-plugin/`](.opencode-plugin/).
 
 ### Keep the CLI current
 
