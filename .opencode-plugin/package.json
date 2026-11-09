@@ -1,0 +1,54 @@
+{
+  "name": "@tavily/opencode-plugin",
+  "version": "2.3.0",
+  "description": "Tavily plugin for OpenCode — web search, content extraction, crawling, URL discovery, and deep research with citations",
+  "type": "module",
+  "main": "index.ts",
+  "files": [
+    "index.ts",
+    "skills",
+    "rules",
+    "LICENSE",
+    "README.md"
+  ],
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "tavily",
+    "web-search",
+    "crawling",
+    "research",
+    "content-extraction",
+    "llm",
+    "ai"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tavily-ai/skills",
+    "directory": ".opencode-plugin"
+  },
+  "homepage": "https://tavily.com",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": {
+    "name": "Tavily"
+  },
+  "engines": {
+    "opencode": "^1.18.29 || ^2.0.0"
+  },
+  "scripts": {
+    "build": "./build.sh",
+    "prepack": "./build.sh",
+    "check": "tsc --noEmit",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@opencode-ai/plugin": "^1.18.29",
+    "@opencode/plugin": "^2.0.23",
+    "@opencode/schema": "^2.0.23",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.0.0"
+  }
+}
