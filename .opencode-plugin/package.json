@@ -1,6 +1,6 @@
 {
   "name": "@tavily/opencode-plugin",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Tavily plugin for OpenCode — web search, content extraction, crawling, URL discovery, and deep research with citations",
   "type": "module",
   "main": "index.ts",
