@@ -65,6 +65,11 @@ is a hard filter, so search again without it if it doesn't find the page.
 `.tavily/` and read only the parts you need. An MCP result lands straight in your context, so keep those calls
 small.
 
+**With MCP tools, don't retype results into files.** An MCP result is text in your context, so saving it means
+typing it out again, which costs tokens and can change the content. When the user asks for results stored raw or
+exact, run `tvly` with `-o` (`--output-dir` for a crawl) if you can. Otherwise say the saved copy would be
+retyped, not exact, and offer the CLI [setup](references/setup.md) instead of installing it unasked.
+
 **Read the results critically.** Count independent sources, not results. Treat a generated answer as a summary
 to check, never as a source.
 
