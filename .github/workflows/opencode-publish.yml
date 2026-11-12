@@ -29,6 +29,12 @@ jobs:
           node-version: 24
           registry-url: https://registry.npmjs.org
 
+      # Trusted publishing needs npm 11.5.1 or later.
+      - name: Update npm
+        run: |
+          npm install -g npm@latest
+          npm --version
+
       - name: Check version
         run: |
           version=$(jq -r .version package.json)
@@ -47,5 +53,5 @@ jobs:
           if npm view "@tavily/opencode-plugin@$(jq -r .version package.json)" version > /dev/null 2>&1; then
             echo "Already published"
           else
-            npm publish --provenance --access public
+            npm publish --provenance --access public --loglevel verbose
           fi
