@@ -2,7 +2,7 @@
   "$schema": "https://antigravity.google/schemas/v1/plugin.json",
   "name": "tavily",
   "displayName": "Tavily",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Web search, content extraction, website crawling, URL discovery, and deep research for Antigravity via Tavily's hosted MCP server and skills.",
   "logo": "assets/tavily-logo.svg",
   "suggestedPrompts": [

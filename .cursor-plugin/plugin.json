@@ -1,7 +1,7 @@
 {
   "name": "tavily",
   "displayName": "Tavily",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Web search, content extraction, crawling, deep research, and URL discovery. MCP tools plus skills; CLI for terminal agents.",
   "author": {
     "name": "Tavily",
