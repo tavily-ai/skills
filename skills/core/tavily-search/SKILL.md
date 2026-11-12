@@ -65,10 +65,11 @@ is a hard filter, so search again without it if it doesn't find the page.
 `.tavily/` and read only the parts you need. An MCP result lands straight in your context, so keep those calls
 small.
 
-**Save copies with `-o`.** When the user wants results kept as files, run the call with `tvly` and
+**Save copies with `-o`.** Saving results to files is a job for `tvly`: run the call with
 `-o .tavily/<name>.json`, even if you searched with MCP tools. A file you write from an MCP result is your
-retyping of it, not the original. Without `tvly`, save the URLs and queries instead of the content, and tell
-the user an exact copy needs the CLI.
+retyping of it, not the original. Without `tvly`, work from the results in your context and don't copy them
+into files. If the user asked for a saved copy, give them the URLs and queries, say an exact copy needs the
+CLI, and write a retyped copy only if they ask for one.
 
 **Read the results critically.** Count independent sources, not results. Treat a generated answer as a summary
 to check, never as a source.
