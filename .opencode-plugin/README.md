@@ -30,19 +30,13 @@ OpenCode installs the package automatically on next launch
 
 ### Install the Tavily CLI
 
-Then install the Tavily CLI globally:
+Then install the Tavily CLI globally (requires Node.js 20.1 or later):
 
 ```bash
-curl -fsSL https://cli.tavily.com/install.sh | bash
+npm install -g @tavily/cli
 ```
 
-Or via Python:
-
-```bash
-uv tool install tavily-cli
-# or
-pip install tavily-cli
-```
+`pnpm add -g`, `yarn global add`, and `bun add -g` work the same way.
 
 ## Authentication
 
@@ -90,7 +84,7 @@ bun test
 
 - [Tavily](https://tavily.com)
 - [Tavily Documentation](https://docs.tavily.com)
-- [Tavily CLI Installation](https://cli.tavily.com)
+- [Tavily CLI](https://www.npmjs.com/package/@tavily/cli)
 - [OpenCode Plugin Docs](https://opencode.ai/docs/plugins)
 - [OpenCode Ecosystem](https://opencode.ai/docs/ecosystem)
 

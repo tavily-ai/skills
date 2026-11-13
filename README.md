@@ -6,26 +6,21 @@ Web search, content extraction, site crawling, URL discovery, and deep research 
 
 ### Recommended: guided CLI setup
 
-Install the [Tavily CLI](https://github.com/tavily-ai/tavily-cli):
+Install the [Tavily CLI](https://github.com/tavily-ai/cli) and run its guided
+setup in one command (requires Node.js 20.1 or later):
 
 ```bash
-curl -fsSL https://cli.tavily.com/install.sh | bash
-```
-
-On a fresh interactive desktop install, the installer starts `tvly init`
-automatically. Otherwise run it after installation:
-
-```bash
-tvly init
+npx @tavily/cli init
 
 # Prefer to open the sign-in link yourself
-tvly init --no-browser
+npx @tavily/cli init --no-browser
 ```
 
-`tvly init` authenticates, detects Claude Code, Codex, and Cursor, installs
-these skills, and verifies a live search. It reuses an existing credential and
-is safe to rerun. Skills installed this way are pinned to the CLI release, so
-run `tvly update` before `tvly init` when refreshing them.
+`tvly init` installs `tvly` globally, asks how to sign in, detects Claude Code,
+Codex, and Cursor, installs these skills and the Tavily MCP server for the
+agents you pick, and verifies a live search. It reuses an existing credential
+and is safe to rerun; rerunning it updates the skills to the latest published
+version.
 
 `tvly search` and `tvly extract` also work without authentication, subject to
 a keyless rate-limit cap. Use `tvly init --skip-auth` to keep keyless mode while
@@ -49,7 +44,7 @@ npx skills add https://github.com/tavily-ai/skills
 Install the CLI separately if needed:
 
 ```bash
-uv tool install tavily-cli   # or: pip install tavily-cli
+npm install -g @tavily/cli
 ```
 
 Then use `tvly init --skip-skills` for guided authentication and verification,

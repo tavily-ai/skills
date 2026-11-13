@@ -36,14 +36,15 @@ session.
 
 ## CLI
 
-Install it if `tvly` is missing:
+Install it if `tvly` is missing. It needs Node.js 20.1 or later:
 
 ```bash
-curl -fsSL https://cli.tavily.com/install.sh | bash
+npm install -g @tavily/cli
 ```
 
-You can also install it with `uv tool install tavily-cli` or `pip install
-tavily-cli`.
+Use `pnpm add -g`, `yarn global add`, or `bun add -g` when that is the
+package manager on the machine. If none of them is available, tell the user
+that the CLI needs Node.js and use MCP instead.
 
 Search and extract work without an account, up to a keyless rate limit. Don't
 look for an API key or sign in before the first search or extract. Map, crawl
