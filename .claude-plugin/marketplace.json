@@ -24,6 +24,24 @@
       "keywords": ["search", "web-search", "rag", "agents", "llm", "research", "crawl", "extract"],
       "category": "external-integrations",
       "tags": ["web-search", "data-retrieval", "agents", "rag", "research"]
+    },
+    {
+      "name": "tavily-workflows",
+      "source": {
+        "source": "github",
+        "repo": "tavily-ai/official-workflows"
+      },
+      "description": "Finished deliverables from the web using Tavily: literature reviews, market reports, competitor analyses, diligence memos, qualified lead lists, and meeting briefs. Requires the tavily plugin.",
+      "author": {
+        "name": "Tavily Team",
+        "email": "tavily-integrations@nebius.com"
+      },
+      "homepage": "https://github.com/tavily-ai/official-workflows",
+      "repository": "https://github.com/tavily-ai/official-workflows",
+      "license": "MIT",
+      "keywords": ["research", "market-research", "competitor-analysis", "due-diligence", "lead-generation", "meeting-prep", "literature-review"],
+      "category": "productivity",
+      "tags": ["research", "reports", "sales", "workflows"]
     }
   ]
 }

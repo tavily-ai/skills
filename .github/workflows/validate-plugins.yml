@@ -91,7 +91,7 @@ jobs:
       - name: Versions match
         run: |
           versions=$(jq -r '.version' .claude-plugin/plugin.json .cursor-plugin/plugin.json .codex-plugin/plugin.json .grok-plugin/plugin.json .opencode-plugin/package.json .antigravity-plugin/plugin.json gemini-extension.json
-                     jq -r '.plugins[].version' .claude-plugin/marketplace.json)
+                     jq -r '.plugins[] | select(.name == "tavily") | .version' .claude-plugin/marketplace.json)
           echo "$versions"
           if [ "$(echo "$versions" | sort -u | wc -l)" -ne 1 ]; then
             echo "Plugin manifests have different versions"
