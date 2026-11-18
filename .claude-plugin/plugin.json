@@ -34,7 +34,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "awk 'f>=2; /^---$/{f++}' \"${CLAUDE_PLUGIN_ROOT}/rules/tavily-awareness.mdc\""
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/scripts/session-start.sh\""
           }
         ]
       }
