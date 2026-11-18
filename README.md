@@ -58,6 +58,15 @@ or `tvly login` when you only need to authenticate.
 
 It adds these skills and the hosted Tavily MCP server.
 
+The same marketplace also lists `tavily-workflows`, an optional plugin with the
+skills from [`tavily-ai/official-workflows`](https://github.com/tavily-ai/official-workflows).
+Each one produces a finished deliverable, such as a market report, diligence memo,
+or meeting brief. It requires `tavily`:
+
+```
+/plugin install tavily-workflows --marketplace tavily-ai/skills
+```
+
 ### Cursor plugin
 
 Install **Tavily** from the [Cursor Marketplace](https://cursor.com/marketplace/tavily).
