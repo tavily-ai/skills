@@ -128,17 +128,25 @@ describe("dual-version plugin", () => {
     assert.deepEqual(replayed, skills);
   });
 
-  it("V2 appends the OpenCode rules without removing existing system context", async () => {
+  it("V2 appends the OpenCode rules on context, compaction and generate hooks", async () => {
     const { hooks } = await setupV2();
-    const event = { system: [{ type: "text", text: "Existing instructions" }] };
-    await hooks.get("session.context")!(event);
-    assert.deepEqual(event.system, [
-      { type: "text", text: "Existing instructions" },
-      {
-        type: "text",
-        text: readFileSync(rulesPath, "utf8"),
-      },
-    ]);
+    // Every request kind that carries the session system prompt must get the same
+    // injection, so the prompt prefix stays byte-identical across kinds and the
+    // provider's prompt cache is not invalidated (e.g. by compaction).
+    for (const name of ["session.context", "session.compaction", "session.generate"]) {
+      const hook = hooks.get(name);
+      assert.ok(hook, `missing ${name} hook`);
+      const event = { system: [{ type: "text", text: "Existing instructions" }] };
+      await hook!(event);
+      assert.deepEqual(
+        event.system,
+        [
+          { type: "text", text: "Existing instructions" },
+          { type: "text", text: readFileSync(rulesPath, "utf8") },
+        ],
+        `${name} should append the rules without removing existing system context`,
+      );
+    }
   });
 
   it("V2 forwards the API key through create.before and preserves other variables", async () => {

@@ -83,9 +83,16 @@ export default {
     });
 
     const rules = readFileSync(rulesPath, "utf8");
-    await ctx.session.hook("context", (event) => {
-      event.system.push({ type: "text", text: rules });
-    });
+    // Register on every request kind that carries the session system prompt, so the
+    // injected rules stay byte-identical across normal, compaction and generate
+    // requests. OpenCode runs a different hook per kind (context, compaction,
+    // generate); a prefix that diverges between kinds breaks the provider's prompt
+    // cache, e.g. compaction re-prefills the whole conversation from scratch.
+    for (const kind of ["context", "compaction", "generate"] as const) {
+      await ctx.session.hook(kind, (event) => {
+        event.system.push({ type: "text", text: rules });
+      });
+    }
 
     await ctx.shell.hook("create.before", (event) => {
       if (process.env.TAVILY_API_KEY) {
