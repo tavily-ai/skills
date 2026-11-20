@@ -343,6 +343,7 @@ import json
 
 openai_client = OpenAI()
 tavily_client = TavilyClient()
+model = "gpt-5.6-sol"
 
 tools = [{
     "type": "function",
@@ -369,7 +370,8 @@ def handle_tool_call(tool_call):
 
 # Chat completion with tools
 response = openai_client.chat.completions.create(
-    model="gpt-4",
+    model=model,
+    reasoning_effort="none",
     messages=[{"role": "user", "content": "What are the latest AI trends?"}],
     tools=tools
 )
@@ -385,7 +387,8 @@ if response.choices[0].message.tool_calls:
         {"role": "tool", "tool_call_id": tool_call.id, "content": json.dumps(search_results)}
     ]
     final = openai_client.chat.completions.create(
-        model="gpt-4",
+        model=model,
+        reasoning_effort="none",
         messages=messages
     )
 ```
