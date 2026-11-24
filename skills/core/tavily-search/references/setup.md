@@ -61,8 +61,11 @@ When authentication is needed, run guided setup with `tvly init`, or `tvly init
 --no-browser` to print the sign-in link instead of opening it. `tvly init`
 reuses an existing credential, installs or updates the Tavily skills, and runs
 a live test search. Use `tvly init --skip-skills` when the skills are already
-installed. To sign in without the rest of setup, use `tvly login`, `tvly login
---api-key <key>`, or set `TAVILY_API_KEY`.
+installed. To sign in without the rest of setup, use `tvly login` or set
+`TAVILY_API_KEY`. To save a key the user gave you, pipe it in with
+`tvly login --api-key -` instead of passing it as an argument, which would put
+it in shell history. Don't run `tvly login --api-key` with no value yourself:
+without a terminal it waits for the key on stdin.
 
 The browser sign-in returns to a localhost callback on the machine that runs
 `tvly`. In a remote session, that callback must be reachable, which may need
